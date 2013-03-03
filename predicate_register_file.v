@@ -33,9 +33,9 @@ input                  wr_data;
 //----------------------------------
 // Output Ports
 //----------------------------------
-output reg  data1;
-output reg  data2;
-output reg  data3;
+output  data1;
+output  data2;
+output  data3;
 
 // Register File
 reg reg_file[NUM_REG-1:0];
