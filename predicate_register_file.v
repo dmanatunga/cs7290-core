@@ -1,6 +1,7 @@
 module predicate_register_file (
   // Inputs
   clk,
+  reset,
   rd_addr1,
   rd_addr2,
   rd_addr3,
@@ -16,10 +17,12 @@ module predicate_register_file (
 
 parameter REG_BITS = 2;
 localparam NUM_REG = 1 << REG_BITS;
+
 //----------------------------------
 // Input Ports
 //----------------------------------
 input                  clk;
+input                  reset;
 input [REG_BITS-1:0]   rd_addr1;
 input [REG_BITS-1:0]   rd_addr2;
 input [REG_BITS-1:0]   rd_addr3;
@@ -36,6 +39,7 @@ output reg  data3;
 
 // Register File
 reg reg_file[NUM_REG-1:0];
+integer i;
 
 initial begin
     reg_file[0] <= 0;
@@ -48,22 +52,25 @@ initial begin
     reg_file[7] <= 0;
 end
 
+assign data1 = reg_file[rd_addr1];
+assign data2 = reg_file[rd_addr2];
+assign data3 = reg_file[rd_addr3];
+    
 // Register Write
-always @(posedge clk) begin
+always @(negedge clk) begin
   if (wr_en)
     begin
       reg_file[wr_addr] <= wr_data;
     end
 end
 
-// Register read
-always @(negedge clk) begin
-  begin
-    data1 <= reg_file[rd_addr1];
-    data2 <= reg_file[rd_addr2];
-    data3 <= reg_file[rd_addr3];
+// Reset Register File
+always @(posedge clk) begin
+  if (reset) begin
+    for (i = 0; i < NUM_REG; i = i + 1) begin
+      reg_file[i] <= 0;
+    end
   end
 end
-
 endmodule
 
