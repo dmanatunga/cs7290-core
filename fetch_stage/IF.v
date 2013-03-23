@@ -12,6 +12,7 @@ module IF(
 parameter MEM_SIZE = 32;
 parameter MEM_BITS = 5;
 parameter WORD_BITS = 2;
+parameter WORD_SIZE = 32;
 
 // Inputs
 input            clk;
@@ -20,9 +21,8 @@ input            sel_br;
 input            pc_stall;
  
 // Outputs
-
-output      [31:0]  next_pc;
-output reg  [31:0]  ins;
+output      [31:0]           next_pc;
+output reg  [WORD_SIZE-1:0]  ins;
 
 reg      [31:0]  pc;
 wire     [31:0]  new_pc;
@@ -31,7 +31,7 @@ wire     [31:0]  mem_addr;
 reg      [31:0]  MEMORY[MEM_SIZE-1:0];
 
 initial begin
-  PC <= 32'd0;
+  pc <= 32'd0;
   /**
   MEMORY[0] <= 32'h05110003;
   MEMORY[1] <= 32'h05190005;
@@ -82,7 +82,7 @@ always @(posedge clk) begin
     end
 end
 
-always @(PC) begin
+always @(pc) begin
   ins <= MEMORY[pc[MEM_BITS-1+WORD_BITS:WORD_BITS]];
 end
 
