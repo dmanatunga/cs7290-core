@@ -15,44 +15,32 @@ module register_file (
   data3  
 );
 
-parameter REG_BITS = 4;
-parameter DATA_SIZE = 32;
+parameter ADDR_SIZE = 4;
+parameter DATA_WIDTH = 32;
 
-localparam NUM_REG = 1 << REG_BITS;
+localparam NUM_REG = 1 << ADDR_SIZE;
 //----------------------------------
 // Input Ports
 //----------------------------------
 input                  clk;
 input                  reset;
-input [REG_BITS-1:0]   rd_addr1;
-input [REG_BITS-1:0]   rd_addr2;
-input [REG_BITS-1:0]   rd_addr3;
+input [ADDR_SIZE-1:0]   rd_addr1;
+input [ADDR_SIZE-1:0]   rd_addr2;
+input [ADDR_SIZE-1:0]   rd_addr3;
 input                  wr_en;
-input [REG_BITS-1:0]   wr_addr;
-input [DATA_SIZE-1:0]  wr_data;
+input [ADDR_SIZE-1:0]   wr_addr;
+input [DATA_WIDTH-1:0] wr_data;
 
 //----------------------------------
 // Output Ports
 //----------------------------------
-output  [DATA_SIZE-1:0] data1;
-output  [DATA_SIZE-1:0] data2;
-output  [DATA_SIZE-1:0] data3;
+output  [DATA_WIDTH-1:0] data1;
+output  [DATA_WIDTH-1:0] data2;
+output  [DATA_WIDTH-1:0] data3;
 
 // Register File
-reg [DATA_SIZE-1:0] reg_file[NUM_REG-1:0];
-
+reg [DATA_WIDTH-1:0] reg_file[NUM_REG-1:0];
 integer i;
-
-initial begin
-    reg_file[0] <= 0;
-    reg_file[1] <= 0;
-    reg_file[2] <= 0;
-    reg_file[3] <= 0;
-    reg_file[4] <= 0;
-    reg_file[5] <= 0;
-    reg_file[6] <= 0;
-    reg_file[7] <= 0;
-end
 
 assign data1 = reg_file[rd_addr1];
 assign data2 = reg_file[rd_addr2];
