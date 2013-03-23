@@ -1,35 +1,35 @@
 module alu_pred (
-	ctrl_sigs,
+	pred_op,
 	srcA,
 	srcB,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
-	input	[3:0]ctrl_sigs;
-	input	  srcA;
-	input	  srcB;
+	input	[3:0]pred_op;
+	input	[31:0]srcA;
+	input	[31:0]srcB;
 	output	reg  result;
 
 always@(*)
 begin
-   case(ctrl_sigs)
-      4'h1:begin
-      	   result    = srcA && srcB;
+   case(pred_op)
+      3'h1:begin
+      	   result    = srcA[0] && srcB[0];
        end
-      4'h2:begin
-      	   result    = srcA || srcB;
+      3'h2:begin
+      	   result    = srcA[0] || srcB[0];
        end
-      4'h3:begin
-      	   result    = ((!srcA)&&(srcB)) || ((srcA)&&(!srcB));
+      3'h3:begin
+      	   result    = ((!srcA[0])&&(srcB[0])) || ((srcA[0])&&(!srcB[0]));
        end
-      4'h4:begin
-      	   result    = !srcA;
+      3'h4:begin
+      	   result    = ~srcA[0];
        end
-      //4'h4:begin				
-      //	   result    = !srcA; // is_neg
-      // end
-      //4'h4:begin
-      //	   result    = !srcA; // is_zero
-      // end
+      3'h5:begin
+      	   result    = (srcA >= 0) ? 0 : 1;	//FIX check this
+       end
+      3'h6:begin
+      	   result    = (srcA == 0) ? 1 : 0;     //FIX check this
+       end
        default: begin
       	   result    = 0;
       	end

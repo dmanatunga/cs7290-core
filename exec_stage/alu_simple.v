@@ -2,10 +2,12 @@ module alu_simple (
 	clock,
 	srcA,
 	srcB,
-	ctrl_sigs,
+	alu_op,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
-input	[3:0]  ctrl_sigs;
+
+parameter ALU_OP  = 4;
+input	[ALU_OP - 1 : 0]  alu_op;
 input   [31:0] srcA;
 input   [31:0] srcB;
 input          clock;
@@ -17,36 +19,27 @@ wire   [31:0] result3;
 wire   [31:0] result4;
 
 wire add_sub;
-assign add_sub = 1;	// temporary
+assign add_sub = (alu_op == 3'b110)? 1 : 0;	// temporary
 always@(*)
 begin
-   case(ctrl_sigs)
-      4'h1:begin
+   case(alu_op)
+      3'h6,3'h7:begin
       	   result    = result1;
        end
-      4'h2:begin
-      	   result    = result3;
+      3'h1:begin
+	   result    = {!srcA[31],srcA[30:0]};	//FIX this is not corrct
        end
-      4'h3:begin
-      	   result    = result4;
+      3'h2:begin
+      	   result    = ~srcA;
        end
-      4'h4:begin
-      	   result    = srcA << srcB;
+      3'h3:begin
+      	   result    = srcA & srcB;
        end
-      4'h5:begin				
-      	   result    = srcA >> srcB; // is_neg
+      3'h4:begin
+      	   result    = srcA | srcB;
        end
-      4'h6:begin
-      	   result    = srcA | srcB; // is_zero
-       end
-      4'h7:begin
-      	   result    = srcA & srcB; // is_zero
-       end
-      4'h8:begin
-      	   result    = srcA ^ srcB; // is_zero
-       end
-      4'h9:begin
-	   result    = {!srcA[31],srcA[30:0]};	//f_neg
+      3'h5:begin
+      	   result    = srcA ^ srcB;
        end
        default: begin
       	   result    = 32'b0;
@@ -61,15 +54,6 @@ end
       .result(result1)
    );
    
-   fp_add_sub fp_add_sub1(
-      .add_sub(add_sub),
-      .clock (clock),
-      .dataa (srcA),
-      .datab (srcB),
-      .result(result3)
-   );
-   
-   //int mode operation??
 endmodule
 
 module int_add_sub(
@@ -83,5 +67,4 @@ input   [31:0] datab;
 output   [31:0] result;
 
    assign result = (add_sub)?(dataa + datab) : (dataa - datab);
-
 endmodule

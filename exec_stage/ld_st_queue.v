@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module ld_st_queue(
     clk,
     reset,
@@ -31,14 +33,14 @@ input                   	reset;
 input         [ADDR_BITS-1:0]   addr_in;
 input         [ROB_BITS-1:0]    rob_entry_in;
 input         [DATA_BITS-1:0]   data_in;
-input         [TYPE_BITS-1:0]   rw_in;
+input         [TYPE_BITS-1:0]   rw_in;	//FIX can we rd/wr or control signals
 input                           add_entry;
 input                           commit_head;
 
 // Outputs
 output reg    [ROB_BITS-1:0]    head_id;
 output                          head_finished;
-output                          head_addr_out;
+output                          head_addr_out;	//FIX this is size of dest reg
 output        [DATA_BITS-1:0]   head_data_out;
 output        [ROB_BITS-1:0]    head_rob_entry_out;
 output                          head_rw_in;
@@ -50,7 +52,7 @@ reg     [ROB_ENTRY_SIZE-1:0]    queue[0:ROB_SIZE-1];
 wire    [ROB_BITS-1:0]          next_entry;
 wire    [ROB_ENTRY_SIZE-1:0]    head_entry;
 wire    [DATA_BITS-1:0] 	mem_data_out;
-wire      		        set_ins_finished;
+reg      		        set_ins_finished;
 wire    [ROB_BITS-1:0] 		ins_queue_id;
 integer i;
 reg 				mem_send;
@@ -61,7 +63,7 @@ assign head_addr_out 	= 0;
 assign head_data_out 	= 0;
 assign head_rob_entry_out = 0;
 assign head_rw_in 	= 0;
-assign next_entry 	= tail_id + 1;
+assign next_entry 	= tail_id + 1;	//not good logic!!
 
 always @(posedge clk) begin
   if (reset) begin
@@ -97,7 +99,10 @@ always @(posedge clk) begin
       //queue[ins_queue_id][ROB_ENTRY_SIZE-ADDR_BITS-1:ROB_ENTRY_SIZE-ADDR_BITS-DATA_BITS-1] <= {mem_data_out};	//add data coming back
   end  
 end
-
+initial begin
+#1000 set_ins_finished = 1;
+#100 set_ins_finished = 0; 
+end
 /*memory_system mem_module(
 addr_in.(addr_in), 
 data_in.(data_in), 
