@@ -1,19 +1,20 @@
 module control_unit(
+	// Inputs
 	clk,
 	reset,
 	opcode,
+	// Outputs - Control Signals
 % for sig in ctrl_signals:
 	${sig}${',' if not loop.last else ''}
 % endfor
 );
 
-.parameter OPCODE_SIZE=6;
-defparam NUM_OPS = 1 << OPCODE_SIZE;
+localparam NUM_OPS = 1 << `OPCODE_SIZE;
 
 // Inputs
 input clk;
 input reset;
-input	[OPCODE_SIZE-1:0]	opcode;
+input	[`OPCODE_SIZE-1:0]	opcode;
 
 //Outputs
 % for sig in ctrl_signals:
