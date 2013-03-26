@@ -2,15 +2,15 @@ module alu_complex (
 	clock,
 	srcA,
 	srcB,
-	ctrl_sigs,
+	complex_alu_op,
 	select,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
 input          clock;
 input   [31:0] srcA;
 input   [31:0] srcB;
-input	[3:0]  ctrl_sigs;
-input   [3:0]  select;
+input	[2:0]  complex_alu_op;
+input   [2:0]  select;
 output  [31:0] result;
 
 
@@ -25,11 +25,11 @@ wire   [31:0] result3;
 wire   [31:0] result4;
 wire   [31:0] result5;
 
-assign srcA1 = (ctrl_sigs == 4'h1)?srcA:32'd0;	//is this needed?
-assign srcA2 = (ctrl_sigs == 4'h2)?srcA:32'd0;
-assign srcA3 = (ctrl_sigs == 4'h3)?srcA:32'd0;
-assign srcA4 = (ctrl_sigs == 4'h4)?srcA:32'd0;
-assign srcA5 = (ctrl_sigs == 4'h5)?srcA:32'd0;
+assign srcA1 = (complex_alu_op == 3'h1)?srcA:32'd0;	//is this needed?
+assign srcA2 = (complex_alu_op == 3'h2)?srcA:32'd0;
+assign srcA3 = (complex_alu_op == 3'h3)?srcA:32'd0;
+assign srcA4 = (complex_alu_op == 3'h4)?srcA:32'd0;
+assign srcA5 = (complex_alu_op == 3'h5)?srcA:32'd0;
 
 assign result = (select == 1)? result1 : ((select == 2)? result2 : ((select == 3)? result3:((select == 4)? result4 : ((select == 5)? result5 : 0))));
 
@@ -129,10 +129,10 @@ endmodule
 //endmodule
 
 //Dead code
-//always@(ctrl_sigs, select)
-////always@(ctrl_sigs)
+//always@(complex_alu_op, select)
+////always@(complex_alu_op)
 //begin
-//      case(ctrl_sigs)
+//      case(complex_alu_op)
 //	4'h1: select = 1;
 //	4'h2: select = 2;
 //	4'h3: select = 3;

@@ -2,15 +2,15 @@ module alu_fp_simple (
 	clock,
 	srcA,
 	srcB,
-	ctrl_sigs,
+	float_op,
 	select,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
 input          clock;
 input   [31:0] srcA;
 input   [31:0] srcB;
-input	[3:0]  ctrl_sigs;
-input	[3:0]  select;
+input	[2:0]  float_op;
+input	[2:0]  select;
 output  [31:0] result;
 
 wire   [31:0] srcA1;	//Later: declare them as array
@@ -30,13 +30,13 @@ wire   [31:0] result7;
 wire 	      add;
 wire 	      sub;
 
-assign srcA1 = (ctrl_sigs == 4'h1)?srcA:32'd0;	//itof
-assign srcA2 = (ctrl_sigs == 4'h2)?srcA:32'd0;  //ftoi
-assign srcA3 = (ctrl_sigs == 4'h3)?srcA:32'd0;  //fadd_sub	//FIX
-assign srcA4 = (ctrl_sigs == 4'h4)?srcA:32'd0;  //fadd_sub	//FIX
-assign srcA5 = (ctrl_sigs == 4'h5)?srcA:32'd0;  //fmul
-assign srcA6 = (ctrl_sigs == 4'h6)?srcA:32'd0;  //fdiv
-assign srcA7 = (ctrl_sigs == 4'h7)?srcA:32'd0;  //fneg
+assign srcA1 = (float_op == 3'h1)?srcA:32'd0;	//itof
+assign srcA2 = (float_op == 3'h2)?srcA:32'd0;  //ftoi
+assign srcA3 = (float_op == 3'h3)?srcA:32'd0;  //fadd_sub	//FIX
+assign srcA4 = (float_op == 3'h4)?srcA:32'd0;  //fadd_sub	//FIX
+assign srcA5 = (float_op == 3'h5)?srcA:32'd0;  //fmul
+assign srcA6 = (float_op == 3'h6)?srcA:32'd0;  //fdiv
+assign srcA7 = (float_op == 3'h7)?srcA:32'd0;  //fneg
 
 assign result = (select == 1)? result1 : ((select == 2)? result2 : ((select == 3)? result3:((select == 4)? result4 : ((select == 5)? result5 : ((select == 6)? result6 : ((select == 7)? result7 : 0 ))))));
 assign add = 1;
