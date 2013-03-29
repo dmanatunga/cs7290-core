@@ -1,16 +1,14 @@
 module alu_simple (
-	clock,
 	srcA,
 	srcB,
 	alu_op,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
 
-parameter ALU_OP  = 4;
+parameter ALU_OP  = 3;
 input	[ALU_OP - 1 : 0]  alu_op;
 input   [31:0] srcA;
 input   [31:0] srcB;
-input          clock;
 output reg  [31:0] result;
 
 wire   [31:0] result1;

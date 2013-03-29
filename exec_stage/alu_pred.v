@@ -4,7 +4,7 @@ module alu_pred (
 	srcB,
 	result)/* synthesis synthesis_clearbox = 1 */;
 
-	input	[3:0]pred_op;
+	input	[2:0]pred_op;
 	input	[31:0]srcA;
 	input	[31:0]srcB;
 	output	reg  result;
