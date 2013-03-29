@@ -12,7 +12,6 @@ module IF_ID_latch(
   out_is_nop
 );
 
-parameter INS_SIZE = 32;
 // Inputs
 input					clk;
 input					reset;
@@ -21,9 +20,9 @@ input                   clr_latch;
 input	[`INS_SIZE-1:0]	in_next_pc;
 input	[`INS_SIZE-1:0]	in_ins;
 // Outputs
-output reg [INS_SIZE-1:0]    out_next_pc;
-output reg [INS_SIZE-1:0]    out_ins;
-output reg 					 out_is_nop;
+output reg	[`INS_SIZE-1:0]    out_next_pc;
+output reg	[`INS_SIZE-1:0]    out_ins;
+output reg					   out_is_nop;
 
 
 always @(posedge clk) begin
