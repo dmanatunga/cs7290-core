@@ -111,8 +111,8 @@ assign wr_reg_data = ins_data[`REG_DATA_SIZE-1:0];
 assign wr_pred_data = ins_data[`PRED_DATA_SIZE-1:0];
 
 // Arch. Register File
-register_file_0r1w #(.DATA_WIDTH(`REG_DATA_SIZE), 
-                     .REG_ADDR_SIZE(`REG_ADDR_SIZE)) 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`REG_DATA_SIZE), 
+								.REG_ADDR_SIZE(`REG_ADDR_SIZE)) 
   arch_register_file(
     .clk(clk),
     .reset(reset),
@@ -122,8 +122,8 @@ register_file_0r1w #(.DATA_WIDTH(`REG_DATA_SIZE),
 );
 
 // Arch. Predicate Register File
-register_file_0r1w #(.DATA_WIDTH(`PRED_DATA_SIZE), 
-                     .ADDR_SIZE(`PRED_ADDR_SIZE)) 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`PRED_DATA_SIZE), 
+								.ADDR_SIZE(`PRED_ADDR_SIZE)) 
   arch_predicate_file(
     .clk(clk),
     .reset(reset),

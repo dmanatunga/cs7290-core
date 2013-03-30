@@ -1,4 +1,4 @@
-module register_file_0r1w (  
+module register_file_0r1w_asyncRposW (  
     // Inputs
     clk,
     reset,
