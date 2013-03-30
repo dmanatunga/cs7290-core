@@ -21,7 +21,8 @@ module WB(
     // To ID stage
     commit_reg_addr,
     commit_pred_addr,
-    rob_full, 
+    rob_full,	
+	add_entry_id;
     wr_reg_en,
     wr_reg_addr,
     wr_reg_data,
@@ -37,6 +38,7 @@ input							reset;
 input							add_rob_entry;
 input	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
 input	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
+input	[`INS_STATE_SIZE-1:0]	entry_ins_state;
 input	[`REG_DATA_SIZE-1:0]	commit_reg_data;
 input	[`PRED_DATA_SIZE-1:0]	commit_pred_data;
 // Inputs from EX stage
@@ -51,6 +53,7 @@ input	[`DATA_WIDTH-1:0]		ins_data;
 output	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;
 output	[`PRED_ADDR_SIZE-1:0]	commit_pred_addr;
 output							rob_full;
+output							add_entry_id;
 output							wr_reg_en;
 output	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
 output	[`REG_DATA_SIZE-1:0]	wr_reg_data;
@@ -144,6 +147,7 @@ rob_unit #(.ROB_ADDR_SIZE(`ROB_ID_SIZE),
     .commit_head(commit),
     
     .head_id(head_id),
+	.tail_id(add_entry_id),
     .head_finished(head_finished),
     .head_dest_addr(commit_dest_addr),
     .head_ins_type(commit_ins_type),
