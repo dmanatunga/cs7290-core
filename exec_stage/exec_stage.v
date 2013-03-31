@@ -1,10 +1,10 @@
 module exec_stage(
    //inputs
    clk,
+   reset,
    dest_reg,
-   R1_DataDst,
+//   R1_DataDst,	//not needed
    ctrl_sigs,
-//   pc,
    R2_DataSrcA,
    R3_DataSrcB,
    imm1,
@@ -14,12 +14,9 @@ module exec_stage(
    pred_src2,
    latency_counter,
    rob_entry,
-   reset,
    func_select,
    mem_type,
    is_mem,
-//   muxa,
-//   muxb,
    simple_alu_op,
    complex_alu_op,
    pred_op,
@@ -27,9 +24,8 @@ module exec_stage(
    ins_type,
    ins_nop,
    //outputs
-//inst_types, robid, alu_out,alu_free thats it!
    alu_out,
-   ctrl_sigs_pass,
+   ctrl_sigs_pass,	//only pass inst_type
 //   R1_DataDst_pass,
    alu_free_out,
    rob_entry_out,
@@ -47,7 +43,7 @@ parameter DEST_REG_SIZE = 3;
 //******Inputs******
    input        clk;
    input [DEST_REG_SIZE - 1 : 0]  dest_reg;
-   input [31:0] R1_DataDst;
+//   input [31:0] R1_DataDst;
    input [5:0]  ctrl_sigs;
    input [31:0] R2_DataSrcA;
    input [31:0] R3_DataSrcB;
@@ -111,7 +107,7 @@ parameter DEST_REG_SIZE = 3;
    output       			ins_nop_out;
 
 //******Input selection Mux start******
-   assign mem_data_in = (mem_type) ? R1_DataDst 	: 32'h0000_0000;
+   assign mem_data_in = (mem_type) ? R2_DataSrcA 	: 32'h0000_0000;
    assign mem_addr    = (is_mem)   ?(R2_DataSrcA + imm1): 32'h0000_0000;//FIX
    assign ctrl_pass   = {ctrl_sigs,ins_type};	//FIX
    assign func_unit   = (ins_nop == 1) ? DUMMY_ALU : func_select;
@@ -127,7 +123,7 @@ parameter DEST_REG_SIZE = 3;
                    alu_inB      = imm1;
                 end
          6'h1e : begin
-                   alu_inA      = R1_DataDst;
+                   alu_inA      = R2_DataSrcA;
                    alu_inB      = imm3;
                 end
          6'h0b:begin
