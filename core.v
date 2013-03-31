@@ -64,7 +64,7 @@ wire	if_stall_latch;
 wire	if_clr_latch;
 
 // From IF latch to ID stage
-wire    [`DATA_WIDTH-1:0]	id_next_pc;
+wire    [`DATA_WIDTH-1:0]	id_next_pc; // Also to ex latch
 wire    [`INS_WIDTH-1:0]	id_ins;
 wire						id_ins_is_nop;
 
@@ -72,6 +72,30 @@ wire						id_ins_is_nop;
 wire							if_sel_br;
 wire    [`DATA_WIDTH-1:0]		if_br_target;	
 wire							id_stalls_if;
+
+// From ID stage to EX stage
+wire	id_stall_latch;
+wire	id_clr_latch;
+wire	[`DEST_ADDR_SIZE-1:0]	id_dest_addr;
+wire	[`REG_DATA_WIDTH-1:0]	id_reg_src1;
+wire	[`REG_DATA_WIDTH-1:0]	id_reg_src2;
+wire	[`DATA_WIDTH-1:0]	id_imm_0reg;
+wire	[`DATA_WIDTH-1:0]	id_imm_1reg;
+wire	[`DATA_WIDTH-1:0]	id_imm_2reg;
+wire	[`PRED_DATA_WIDTH-1:0]	id_pred_src1;
+wire	[`PRED_DATA_WIDTH-1:0]	id_pred_src2;
+wire	[3:0]	id_latency;
+wire	[`INS_TYPE_SIZE-1:0]	id_ins_type;
+wire	[2:0]	id_func_select;
+wire	id_mem_type;
+wire	id_is_mem;
+wire	[2:0]	id_simple_alu_op;
+wire	[2:0]	id_complex_alu_op;
+wire	[2:0]	id_pred_op;
+wire	[2:0]	id_float_op;
+wire	[`ROB_ID_SIZE-1:0]	id_ins_id;
+wire	id_muxa;
+wire	[1:0]	id_muxb;
 
 // From ID stage to WB stage
 wire							add_rob_entry;
@@ -200,7 +224,7 @@ ID id(
 	.muxa(id_muxa),
 	.muxb(id_muxb),
 	.alu_op(id_alu_op),
-	.complex_alu_op(id_complex_alu_op),
+r_latch.complex_alu_op(id_complex_alu_op),
 	.pred_op(id_pred_op),
 	.float_op(id_float_op),
 	.latency(id_latency),
@@ -238,7 +262,6 @@ ID_EX_latch id_ex_latch(
 	.in_pred_op		(id_pred_op),
 	.in_float_op		(id_float_op),
 	.in_ins_type		(id_ins_type),
-	.in_ins_nop		(id_ins_nop),
    	.in_muxa		(id_muxa),
    	.in_muxb		(id_muxb),
    	.in_next_pc		(id_next_pc),
