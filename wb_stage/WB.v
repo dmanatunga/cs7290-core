@@ -7,7 +7,7 @@ module WB(
     add_rob_entry,
     entry_dest_addr,
     entry_ins_type,
-	entry_ins_state,
+    entry_ins_state,
     commit_reg_data,
     commit_pred_data,
     // From EX stage
@@ -22,7 +22,7 @@ module WB(
     commit_reg_addr,
     commit_pred_addr,
     rob_full,	
-	add_entry_id;
+    add_entry_id,
     wr_reg_en,
     wr_reg_addr,
     wr_reg_data,
@@ -39,10 +39,10 @@ input							add_rob_entry;
 input	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
 input	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
 input	[`INS_STATE_SIZE-1:0]	entry_ins_state;
-input	[`REG_DATA_SIZE-1:0]	commit_reg_data;
-input	[`PRED_DATA_SIZE-1:0]	commit_pred_data;
+input	[`REG_DATA_WIDTH-1:0]	commit_reg_data;
+input	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
 // Inputs from EX stage
-input	[`ROB_ADDR_SIZE-1:0]	ins_rob_id;
+input	[`ROB_ID_SIZE-1:0]	ins_rob_id;
 input	[`DEST_ADDR_SIZE-1:0]	dest_addr;
 input	[`INS_TYPE_SIZE-1:0]	ins_type;
 input							is_nop;

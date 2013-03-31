@@ -25,10 +25,10 @@ begin
       	   result    = ~srcA[0];
        end
       3'h5:begin
-      	   result    = (srcA >= 0) ? 0 : 1;	//FIX check this
+      	   result    = srcA[31];	//FIX check this
        end
       3'h6:begin
-      	   result    = (srcA == 0) ? 1 : 0;     //FIX check this
+      	   result    = (srcA == 0) ? 1'b1 : 1'b0;     //FIX check this
        end
        default: begin
       	   result    = 0;

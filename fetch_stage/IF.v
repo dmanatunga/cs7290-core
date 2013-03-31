@@ -54,23 +54,14 @@ wire	[`DATA_WIDTH-1:0]	new_pc;
 
 
 assign fetch_addr = pc;
-assign next_pc = pc + 4;
 assign ins = ins_queue;
 assign ins_is_nop = ~ins_queue_valid;
 
 assign next_pc = pc + 4;
 assign fetch_valid = fetch_ready & ~mem_stall;
 
-mux2to1 #(.DATA_WIDTH(`DATA_WIDTH))
-	pc_mux(
-		.A(next_pc),
-		.b(br_target),
-		.sel(sel_br),
-		.out(new_pc)
-);
 
-
-always @(data_valid) begin
+always @(negedge clk) begin
 	if (mem_valid && (fetch_id == mem_id)) begin
 		ins_queue <= mem_data;
 		ins_queue_valid <= 1'b1;
@@ -89,7 +80,7 @@ always @(posedge clk) begin
 		if (!if_stall && ins_queue_valid) begin
 			ins_queue_valid <= 1'b0;
 			if (sel_br) begin
-				pc <= target_pc;
+				pc <= br_target;
 			end else begin
 				pc <= next_pc;
 			end

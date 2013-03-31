@@ -79,6 +79,7 @@ localparam INS_PRED_SRCREG_LOW = `INS_WIDTH - 1- `PRED_ADDR_SIZE - `OPCODE_SIZE 
 
 // Inputs
 input								clk;
+input								reset;
 input	[`DATA_WIDTH-1:0]			next_pc;
 input	[`INS_WIDTH-1:0]			ins;
 input								ins_is_nop;
@@ -102,6 +103,7 @@ output							sel_br;
 output  [`DATA_WIDTH-1:0]		br_target;
 // Output to EX stage
 output							ins_nop;
+output	[`ROB_ID_SIZE-1:0]				ins_id;
 output  [`PRED_DATA_WIDTH-1:0]	predicate;
 output	[`INS_TYPE_SIZE-1:0]	ins_type;
 output  [`DEST_ADDR_SIZE-1:0]	dest_addr;
@@ -147,7 +149,7 @@ wire    [`PRED_ADDR_SIZE-1:0]   pred_src2_addr;
 wire    [`REG_ADDR_SIZE-1:0]    pred_srcReg_addr;
 wire	[`DATA_WIDTH-1:0]		pc_rel_br;
 wire	[`DATA_WIDTH-1:0]		pc_link_br;
-wire	[`DATA_WIDTH-1:0]		reg_rel_br;
+wire	[`DATA_WIDTH-1:0]		reg_br;
 wire	[`DATA_WIDTH-1:0]		reg_link_br;
 
 // Immediate values
@@ -180,7 +182,6 @@ assign opcode = ins[INS_OPCODE_LOW + `OPCODE_SIZE - 1:INS_OPCODE_LOW];
 assign reg_dest_addr = ins[INS_REG_DEST_LOW + `REG_ADDR_SIZE - 1:INS_REG_DEST_LOW]; // Destination Register
 assign pred_srcReg_addr = ins[INS_PRED_SRCREG_LOW + `REG_ADDR_SIZE - 1:INS_PRED_SRCREG_LOW];
 // Identify src1 register address as either 
-	free_unit_id,
 mux2to1 #(.DATA_WIDTH(`REG_ADDR_SIZE)) 
   regSrc1Mux(
     .a(ins[INS_REG_SRC1_LOW + `REG_ADDR_SIZE - 1:INS_REG_SRC1_LOW]), 
@@ -206,8 +207,8 @@ assign pred_src2_addr = ins[INS_PRED_SRC2_LOW + `PRED_ADDR_SIZE - 1:INS_PRED_SRC
 
 // Select the destionation address based on type
 mux2to1 #(.DATA_WIDTH(`REG_ADDR_SIZE)) destMux(
-  .a(dest_reg),
-  .b({{`REG_ADDR_SIZE-`PRED_ADDR_SIZE}{0},dest_pred_reg}),
+  .a(reg_dest_addr),
+  .b({2'b0,pred_dest_addr}),
   .sel(ins_type[0]),
   .out(dest_addr)
 );
@@ -277,7 +278,7 @@ mux2to1 #(.DATA_WIDTH(`PRED_DATA_WIDTH))
   m1(
     .a(`PRED_DATA_WIDTH'b1), 
     .b(pred_val), 
-    .sel(pred_ins), 
+    .sel(is_pred_ins), 
     .out(predicate)
 );
 
@@ -290,14 +291,14 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .reset(reset),
     .pred_addr(pred_addr),
     .pred_valid(pred_ins),
-    .dest_reg_addr(dest_reg_addr),
-    .dest_reg_valid(dest_reg_valid),
+    .dest_reg_addr(reg_dest_addr),
+    .dest_reg_valid(reg_dest_valid),
     .reg_src1_addr(reg_src1_addr),
     .reg_src1_valid(reg_src1_valid),
     .reg_src2_addr(reg_src2_addr),
     .reg_src2_valid(reg_src2_valid),
-    .dest_pred_addr(dest_pred_addr),
-    .dest_pred_valid(dest_pred_valid),
+    .dest_pred_addr(pred_dest_addr),
+    .dest_pred_valid(pred_dest_valid),
     .pred_src1_addr(pred_src1_addr),
     .pred_src1_valid(pred_src1_valid),
     .pred_src2_addr(pred_src2_addr),
@@ -342,7 +343,7 @@ control_unit control(
 	.muxa(muxa),
 	.muxb(muxb),
 	.alu_op(alu_op),
-	.complex_alu_op(complex(alu_op),
+	.complex_alu_op(complex_alu_op),
 	.pred_op(pred_op),
 	.float_op(float_op),
 	.latency(latency)
@@ -371,6 +372,8 @@ assign id_stalls_if = rob_full | (resource_stall & predicate) | ~predicate_valid
 assign issue = predicate & ~id_stalls_if;
 // If instruction was nop, then indicate so to next instruction
 assign ins_nop = ins_is_nop | id_stalls_if | ~issue;
+
+assign ins_id = entry_id;
 
 // WB stage values
 assign add_rob_entry = ~id_stalls_if;

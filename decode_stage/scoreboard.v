@@ -22,6 +22,7 @@ module scoreboard(
     wr_pred,
     wr_pred_addr,
     free_units,
+    issue,
 //    free_unit,
 //    free_unit_id,
 //    mem_ins,
@@ -47,7 +48,7 @@ localparam NUM_FUNC_UNITS = 1 << FUNC_UNIT_OP_SIZE;
 input                               clk;
 input                               reset;
 input   [PRED_ADDR_SIZE-1:0]        pred_addr;
-input                               pred_valid;
+input                               pred_ins;
 input   [REG_ADDR_SIZE-1:0]         reg_dest_addr;
 input                               reg_dest_valid;
 input   [REG_ADDR_SIZE-1:0]         reg_src1_addr;
@@ -152,9 +153,9 @@ always @(posedge clk) begin
     for (i2 = 0; i2 < PRED_FILE_SIZE; i2 = i2 + 1) begin
       pred_file_busy[i2] <= 1'b0;
     end
-    for (i3 = 0; i3 < NUM_FUNC_UNITS; i3 = i3 + 1) begin
-      func_unit_busy[i2] <= 1'b0;
-    end
+    //for (i3 = 0; i3 < NUM_FUNC_UNITS; i3 = i3 + 1) begin
+    //  func_unit_busy[i2] <= 1'b0;
+    //end
   end else begin
     if (issue && reg_dest_valid) begin
       reg_file_busy[reg_dest_addr] <= 1'b1;

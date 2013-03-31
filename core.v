@@ -66,7 +66,7 @@ wire	if_clr_latch;
 // From IF latch to ID stage
 wire    [`DATA_WIDTH-1:0]	id_next_pc; // Also to ex latch
 wire    [`INS_WIDTH-1:0]	id_ins;
-wire						id_ins_is_nop;
+wire						id_is_nop;
 
 // From ID stage to IF stage
 wire							if_sel_br;
@@ -106,7 +106,7 @@ wire	[`DATA_WIDTH-1:0]	ex_imm_1reg;
 wire	[`DATA_WIDTH-1:0]	ex_imm_2reg;
 wire	[`PRED_DATA_WIDTH-1:0]	ex_pred_src1;
 wire	[`PRED_DATA_WIDTH-1:0]	ex_pred_src2;
-wire	[3:0]	ex_latency;
+wire	[3:0]	ex_latency_counter;
 wire	[`INS_TYPE_SIZE-1:0]	ex_ins_type;
 wire	[2:0]	ex_func_select;
 wire	ex_mem_type;
@@ -118,6 +118,7 @@ wire	[2:0]	ex_float_op;
 wire	[`ROB_ID_SIZE-1:0]	ex_ins_id;
 wire	ex_muxa;
 wire	[1:0]	ex_muxb;
+wire    [`DATA_WIDTH-1:0]	ex_next_pc; // Also to ex latch
 
 // From ID stage to WB stage
 wire							add_rob_entry;
@@ -144,18 +145,18 @@ wire	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
 wire	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
 wire							wr_pred_en;
 wire	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
-wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_en;
-
+wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
+wire    [`NUM_FUNC_UNITS-1:0]ex_free_units;
 
 
 pipeline_control_unit pipeline(
 	.if_nop(if_nop),
 	.id_stalls_if(id_stalls_if),
 	.sel_br(if_sel_br),
-	.id(id_nop),
+	.id(id_clr_latch),
 	
 	.if_stall_latch(if_stall_latch),
-	.if_clr_latch(if_clr_latch),
+	.if_clr_latch(if_clr_latch)
 ); 
 
 assign icache_rw_out = 1'b0; // i-cache only ever reads
@@ -166,7 +167,7 @@ IF if_stage(
 	// From outside core memory
 	.mem_stall(icache_stall_in),
 	.mem_data(icache_data_in),
-	.mem_id(icache_data_id),
+	.mem_id(icache_id_in),
 	.mem_valid(icache_ready_in),
 	// From ID stage
 	.sel_br(if_sel_br), 
@@ -207,8 +208,8 @@ ID id(
 	.next_pc(id_next_pc),
 
 	// From EX stage
-	.free_unit(ex_free_unit),
-	.free_unit_id(ex_free_unit_id),
+	.free_units(ex_free_units),
+	//.free_unit_id(ex_free_unit_id),
 	
 	// From WB stage
 	.rob_full(rob_full),
@@ -240,13 +241,13 @@ ID id(
 	.imm_0reg(id_imm_0reg),
 	.imm_1reg(id_imm_1reg),
 	.imm_2reg(id_imm_2reg),
-	.mem_ins(id_mem_ins),
+	.mem_ins(id_is_mem),
 	.mem_type(id_mem_type),
-	.func_unit(id_func_unit),
+	.func_unit(id_func_select),
 	.muxa(id_muxa),
 	.muxb(id_muxb),
-	.alu_op(id_alu_op),
-r_latch.complex_alu_op(id_complex_alu_op),
+	.alu_op(id_simple_alu_op),
+	.complex_alu_op(id_complex_alu_op),
 	.pred_op(id_pred_op),
 	.float_op(id_float_op),
 	.latency(id_latency),
@@ -280,7 +281,7 @@ ID_EX_latch id_ex_latch(
 	.in_mem_type		(id_mem_type),
 	.in_is_mem		(id_is_mem),
 	.in_simple_alu_op	(id_simple_alu_op),
-	.in_complex_alu_op	(id_complex_alu_op)
+	.in_complex_alu_op	(id_complex_alu_op),
 	.in_pred_op		(id_pred_op),
 	.in_float_op		(id_float_op),
 	.in_ins_type		(id_ins_type),
@@ -302,7 +303,7 @@ ID_EX_latch id_ex_latch(
 	.out_mem_type		(ex_mem_type),
 	.out_is_mem		(ex_is_mem),
 	.out_simple_alu_op	(ex_simple_alu_op),
-	.out_complex_alu_op	(ex_complex_alu_op)
+	.out_complex_alu_op	(ex_complex_alu_op),
 	.out_pred_op		(ex_pred_op),
 	.out_float_op		(ex_float_op),
 	.out_ins_type		(ex_ins_type),
@@ -340,7 +341,7 @@ exec_stage ex(
    .muxa		(ex_muxa),
    .muxb		(ex_muxb),
    .next_pc		(ex_next_pc),
-   .//outputs
+   //outputs
    .alu_out 		(wb_ins_data),
    .ctrl_sigs_pass	(wb_ins_type),
    .alu_free_out	(ex_free_units),
@@ -378,7 +379,7 @@ WB  wb(
     .wr_reg_data(wr_reg_data),
     .wr_pred_en(wr_pred_en),
     .wr_pred_addr(wr_pred_addr),
-    .wr_pred_data(wr_pred_en),
+    .wr_pred_data(wr_pred_en)
 );
 
 endmodule

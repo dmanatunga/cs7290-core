@@ -16,7 +16,7 @@ module pipeline_control_unit(
 );
 
 // Inputs
-input	if_ins_is_nop;
+input	if_nop;
 input	id_stalls_if;
 input	sel_br;
 // Outputs
@@ -27,9 +27,9 @@ output if_clr_latch;
 // ID stage signals
 output id_clr_latch;
 
-assign if_clr_latch <= if_nop | sel_br;
-assign if_stall <= id_stalls_if;
-assign id_clr_latch <= id_stalls_if | id_nop;
+assign if_clr_latch 	= if_nop | sel_br;
+assign if_stall_latch 	= id_stalls_if;
+assign id_clr_latch 	= id_stalls_if | id_nop;
 
 endmodule
 

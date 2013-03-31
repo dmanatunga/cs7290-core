@@ -1,4 +1,4 @@
-module mux4to1(
+module mux8to1(
     a,
     b,
     c,

@@ -1,5 +1,7 @@
 // Size of HARP Instruction
-`define INS_WIDTH 32 
+`define INS_SIZE 32 
+// Size of fetch queue ID
+`define FETCH_ID_SIZE 4
 // Size of HARP data
 `define REG_DATA_WIDTH 32
 // Size of HARP predicate data
@@ -15,8 +17,10 @@
 
 // Size of the instruction type designator
 `define INS_TYPE_SIZE 2
+`define INS_STATE_SIZE 1
 // Size of functional unit op
 `define FUNC_UNIT_OP_SIZE 3
+`define NUM_FUNC_UNITS 8
 // The size of the larger data width
 // Typically, should always be register data size
 `define DATA_WIDTH `REG_DATA_WIDTH

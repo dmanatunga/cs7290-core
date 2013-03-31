@@ -1,4 +1,4 @@
-module IF_ID_latch(
+module ID_EX_latch(
   // Inputs
   clk			,
   reset			,
@@ -53,7 +53,6 @@ module IF_ID_latch(
 // Inputs
 input				clk;
 input				reset;
-input	[`INS_SIZE-1:0]		in_next_pc;
 input				stall;
 input				clr_latch;
 input	[`DEST_ADDR_SIZE-1:0]	in_dest_addr;
@@ -64,7 +63,7 @@ input	[`DATA_WIDTH-1:0]	in_imm_1reg;
 input	[`DATA_WIDTH-1:0]	in_imm_2reg;
 input	[`PRED_DATA_WIDTH-1:0]	in_pred_src1;
 input	[`PRED_DATA_WIDTH-1:0]	in_pred_src2;
-input	[3:0]			in_latency;
+input	[3:0]			in_latency_counter;
 input	[`INS_TYPE_SIZE-1:0]	in_ins_type;
 input	[2:0]			in_func_select;
 input				in_mem_type;
@@ -90,7 +89,7 @@ output reg	[`DATA_WIDTH-1:0]	out_imm_1reg;
 output reg	[`DATA_WIDTH-1:0]	out_imm_2reg;
 output reg	[`PRED_DATA_WIDTH-1:0]	out_pred_src1;
 output reg	[`PRED_DATA_WIDTH-1:0]	out_pred_src2;
-output reg	[3:0]			out_latency;
+output reg	[3:0]			out_latency_counter;
 output reg	[`INS_TYPE_SIZE-1:0]	out_ins_type;
 output reg	[2:0]			out_func_select;
 output reg				out_mem_type;
@@ -119,7 +118,7 @@ always @(posedge clk) begin
 		out_imm_2reg		<= in_imm_2reg		;
 		out_pred_src1		<= in_pred_src1		;
 		out_pred_src2		<= in_pred_src2		;
-		out_latency		<= in_latency		;
+		out_latency_counter	<= in_latency_counter	;
 		out_ins_type		<= in_ins_type		;
 		out_func_select		<= in_func_select	;
 		out_mem_type		<= in_mem_type		;

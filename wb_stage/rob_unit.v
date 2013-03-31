@@ -44,7 +44,7 @@ input                     		commit_head;
 
 // Outputs
 output	[INS_STATE_SIZE-1:0]		head_state;
-output                          	head_entry_dest_addr;
+output                          	head_dest_addr;
 output	[INS_TYPE_SIZE-1:0]	       	head_ins_type;
 output reg    [ROB_ADDR_SIZE-1:0]	head_id;
 output reg	[ROB_ADDR_SIZE-1:0]		tail_id;
@@ -99,7 +99,7 @@ always @(posedge clk) begin
       
 		if (set_ins_finished) begin
 			// Set the given instruction as finished
-			rob[ins_rob_id][STATE_BIT_LOC] <= FINISHED_STATE;
+			rob[ins_rob_id][STATE_BIT_LOW_LOC] <= FINISHED_STATE;
 		end
 	end  
 end
