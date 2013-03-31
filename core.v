@@ -228,6 +228,9 @@ ID_EX_latch id_ex_latch(
 	.out_float_op		(ex_float_op),
 	.out_ins_type		(ex_ins_type),
 	.out_ins_nop		(ex_ins_nop),
+   	.out_muxa		(ex_muxa),
+   	.out_muxb		(ex_muxb),
+   	.out_next_pc		(ex_next_pc)
 	
 );
 
@@ -255,6 +258,9 @@ exec_stage ex(
    .float_op		(ex_float_op),
    .ins_type		(ex_ins_type),
    .ins_nop		(ex_ins_nop),
+   .muxa		(ex_muxa),
+   .muxb		(ex_muxb),
+   .next_pc		(ex_next_pc),
    .//outputs
    .alu_out 		(wb_ins_data),
    .ctrl_sigs_pass	(wb_ins_type),
