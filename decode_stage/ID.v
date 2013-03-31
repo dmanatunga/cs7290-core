@@ -357,10 +357,10 @@ assign reg_link_br = reg_src2;
 // Mux to determine the branch target
 mux4to1 #(.DATA_WIDTH(`DATA_WIDTH))
   br_mux(
-	.A(pc_rel_br),
-	.B(pc_link_br),
-	.C(reg_br),
-	.D(reg_link_br),
+	.a(pc_rel_br),
+	.b(pc_link_br),
+	.c(reg_br),
+	.d(reg_link_br),
 	.sel(br_type),
 	.out(br_target)
 );
