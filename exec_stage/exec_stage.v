@@ -15,7 +15,7 @@ module exec_stage(
    latency_counter,
    rob_entry,
    reset,
-   func_unit,
+   func_select,
    mem_type,
    is_mem,
 //   muxa,
@@ -25,14 +25,15 @@ module exec_stage(
    pred_op,
    float_op,
    ins_type,
-
+   ins_nop,
    //outputs
 //inst_types, robid, alu_out,alu_free thats it!
    alu_out,
    ctrl_sigs_pass,
 //   R1_DataDst_pass,
-   alu_free,
+   alu_free_out,
    rob_entry_out,
+   ins_nop_out,
    dest_reg_pass
    );
 
@@ -56,9 +57,9 @@ parameter DEST_REG_SIZE = 3;
    input  	pred_src1;
    input  	pred_src2;
    input [4:0]  latency_counter;        //FIX
-   input [ROB_SIZE - 1:0]  rob_entry;      //FIX
+   input [ROB_SIZE - 1:0]  rob_entry;
    input        reset;  //FIX
-   input [2:0]   func_unit;
+   input [2:0]   func_select;
    //new inputs
    input mem_type;
    input is_mem;
@@ -67,6 +68,7 @@ parameter DEST_REG_SIZE = 3;
    input [2:0] pred_op;
    input [2:0] float_op;
    input [2:0] ins_type;
+   input       ins_nop;
    //input [31:0] pc;
    //input muxa;
    //input [1:0] muxb;
@@ -97,19 +99,22 @@ parameter DEST_REG_SIZE = 3;
    wire [CTRL_WIDTH-1:0] mem_ctrl_sigs;
    wire [2:0]   arb_alu_select;
    wire [CTRL_WIDTH- 3 - 1:0] ctrl_pass;
+   wire [2:0]   func_unit;
+   reg  [NUM_ALU - 1: 0]alu_free;
 
 //******Outputs******
-   output     [31:0]    	alu_out;
-   output     [5:0]     	ctrl_sigs_pass;
-   output     [DEST_REG_SIZE - 1 :0]     	dest_reg_pass;
-   output reg [NUM_ALU - 1: 0]	alu_free;
-   output     [ROB_SIZE - 1:0]  rob_entry_out; 
+   output     [31:0]    		alu_out;
+   output     [5:0]     		ctrl_sigs_pass;
+   output     [DEST_REG_SIZE - 1 :0] 	dest_reg_pass;
+   output     [NUM_ALU - 1: 0]		alu_free_out;
+   output     [ROB_SIZE - 1:0]  	rob_entry_out; 
+   output       			ins_nop_out;
 
 //******Input selection Mux start******
    assign mem_data_in = (mem_type) ? R1_DataDst 	: 32'h0000_0000;
    assign mem_addr    = (is_mem)   ?(R2_DataSrcA + imm1): 32'h0000_0000;//FIX
    assign ctrl_pass   = {ctrl_sigs,ins_type};	//FIX
-
+   assign func_unit   = (ins_nop == 1) ? DUMMY_ALU : func_select;
    always@(*)                                           //specify a list of inputs!!
    begin
       case(ctrl_sigs)
@@ -118,7 +123,6 @@ parameter DEST_REG_SIZE = 3;
                    alu_inB      = imm2;
                 end
          6'h1d : begin
-                   //alu_inA      = pc;
                    alu_inA      = R2_DataSrcA;
                    alu_inB      = imm1;
                 end
@@ -161,7 +165,7 @@ parameter DEST_REG_SIZE = 3;
             alu_rob_entry[0]    <= rob_entry;
             alu_dest_reg [0]    <= dest_reg;
             alu_ctrl_sigs[0]    <= {ctrl_pass, simple_alu_op}; //FIX add more ctrl sigs
-            alu_done     [0]   	<= (arb_alu_select == 0) ? 1'b0 : 1'b1;	//FIX this !
+            alu_done     [0]   	<= 1'b1;
             alu_free     [0]   	<= (arb_alu_select == 0) ? 1'b1 : 1'b0;	//FIX this !
             alu_result   [0]    <= result_alu0;
          end else begin
@@ -222,8 +226,7 @@ parameter DEST_REG_SIZE = 3;
             alu_rob_entry[3]    <= rob_entry;
             alu_dest_reg [3]    <= dest_reg;
             alu_ctrl_sigs[3]    <= {ctrl_pass, pred_op};
-            alu_done     [3]    <= 1'b0;
-            alu_done     [3]   	<= (arb_alu_select == 3) ? 1'b0 : 1'b1;	//FIX this !
+            alu_done     [3]    <= 1'b1;
             alu_free     [3]   	<= (arb_alu_select == 3) ? 1'b1 : 1'b0;	//FIX this !
             alu_result   [3]    <= {31'b0,result_alu3[0]};
          end else begin
@@ -232,7 +235,6 @@ parameter DEST_REG_SIZE = 3;
             alu_free     [3]   	<= (arb_alu_select == 3) ? 1'b1 : alu_free[3];	//FIX this !
          end
 
-	 //Slight modification for the 4th ALU which is the memory block in our case.
 	 //MEMORY UNIT
          if(func_unit == 4) begin
             alu_counter[4]   	<= latency_counter;
@@ -250,18 +252,26 @@ parameter DEST_REG_SIZE = 3;
 //******Each alu register setting end******
 
 //******Mini-Arbitrator start******
-assign arb_alu_select   = (alu_done[0] == 1'b1)? 3'b000 : ( (alu_done[1] == 1'b1)? 3'b001 : ( (alu_done[2] == 1'b1)? 3'b010 : ( (alu_done[3] == 1'b1)? 3'b011 : ((alu_done[4] == 1'b1) ? 3'b100 : DUMMY_ALU))));	//FIX who is resetting the alu_done signal?
-assign alu_out          = (arb_alu_select == DUMMY_ALU)? 32'b0 : alu_result     [arb_alu_select];
-assign dest_reg_pass    = (arb_alu_select == DUMMY_ALU)? 32'b0 : alu_dest_reg   [arb_alu_select];
-assign rob_entry_out    = (arb_alu_select == DUMMY_ALU)? 32'b0 : alu_rob_entry  [arb_alu_select];
-assign ctrl_sigs_pass   = (arb_alu_select == DUMMY_ALU)? 32'b0 : alu_ctrl_sigs  [arb_alu_select];
+assign arb_alu_select   = (alu_done[3] == 1'b1)? 3'b011 : ( (alu_done[2] == 1'b1)? 3'b010 : ( (alu_done[1] == 1'b1)? 3'b001 : ( (alu_done[0] == 1'b1)? 3'b000 : ((alu_done[4] == 1'b1) ? 3'b100 : DUMMY_ALU))));	//FIX when are we setting free signal
+assign alu_out          = (arb_alu_select == DUMMY_ALU)? 0 : alu_result     [arb_alu_select];
+assign dest_reg_pass    = (arb_alu_select == DUMMY_ALU)? 0 : alu_dest_reg   [arb_alu_select];
+assign rob_entry_out    = (arb_alu_select == DUMMY_ALU)? 0 : alu_rob_entry  [arb_alu_select];
+assign ctrl_sigs_pass   = (arb_alu_select == DUMMY_ALU)? 0 : alu_ctrl_sigs  [arb_alu_select];
+assign ins_nop_out   	= (arb_alu_select == DUMMY_ALU)? 1 : 0;
+
+assign alu_free_out[4] = mem_stall;
+assign alu_free_out[3] = 1'b1;
+assign alu_free_out[2] = (func_unit == 2) ? 1'b0: ((arb_alu_select == 2) ? 1'b1 : alu_free[2]);
+assign alu_free_out[1] = (func_unit == 1) ? 1'b0: ((arb_alu_select == 1) ? 1'b1 : alu_free[1]);
+assign alu_free_out[0] = (func_unit == 0) ? ((alu_counter[2] == 1) ? 1'b0 : ((alu_done[2] == 1) ? 1'b0 : ((alu_counter[1] == 1) ? 1'b0 : ((alu_done[1] == 1) ? 1'b0 :1'b1)))) : ((arb_alu_select == 0) ? 1'b1 : alu_free[0]);	//FIX this is still one cycle late in case arbitrator selects it laters
 //******Mini-Arbitrator end******
+
 
 //******ALU Blocks Instantiation start******
 alu_simple alu_0(
         .srcA(alu_inA),
         .srcB(alu_inB),
-        .alu_op(simple_alu_op),	//FIX alu_ctrl_sigs => ALU_OP[2:0]
+        .alu_op(simple_alu_op),
         .result(result_alu0));
 
 alu_fp_simple alu_1(
@@ -276,14 +286,14 @@ alu_complex alu_2(
         .clock(clk),
         .srcA(alu_inA),
         .srcB(alu_inB),
-        .complex_alu_op(complex_alu_op),	//FIX this should be alu ctrl sigs!
-        .select(alu_ctrl_sigs[2]),	//FIX this should be alu ctrl sigs!
+        .complex_alu_op(complex_alu_op),
+        .select(alu_ctrl_sigs[2]),
         .result(result_alu2));
 
 alu_pred alu_3(
         .srcA(pred_src1),
         .srcB(pred_src2),
-        .pred_op(pred_op),//FIX
+        .pred_op(pred_op),
         .result(result_alu3));
 //******ALU Blocks Instantiation end******
 

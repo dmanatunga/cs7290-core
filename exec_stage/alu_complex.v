@@ -25,7 +25,7 @@ wire   [31:0] result3;
 wire   [31:0] result4;
 wire   [31:0] result5;
 
-assign srcA1 = (complex_alu_op == 3'h1)?srcA:32'd0;	//is this needed?
+assign srcA1 = (complex_alu_op == 3'h1)?srcA:32'd0;
 assign srcA2 = (complex_alu_op == 3'h2)?srcA:32'd0;
 assign srcA3 = (complex_alu_op == 3'h3)?srcA:32'd0;
 assign srcA4 = (complex_alu_op == 3'h4)?srcA:32'd0;
@@ -140,4 +140,3 @@ endmodule
 //	default: select = select;	//FIX this
 //      endcase
 //end
-

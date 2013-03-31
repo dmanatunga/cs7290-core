@@ -17,7 +17,7 @@ wire   [31:0] result3;
 wire   [31:0] result4;
 
 wire add_sub;
-assign add_sub = (alu_op == 3'b110)? 1 : 0;	// temporary
+assign add_sub = (alu_op == 3'b110)? 1'b1 : 1'b0;	// temporary
 always@(*)
 begin
    case(alu_op)
