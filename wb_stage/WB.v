@@ -89,7 +89,7 @@ assign set_ins_finished = ~(is_nop | ins_is_head);
 assign commit = head_finished | ins_is_head;
 // Addresses for general and predicate register
 assign commit_reg_addr = commit_dest_addr[`REG_ADDR_SIZE-1:0];
-assign commit_pred_addr = commit_pred_addr[`PRED_ADDR_SIZE-1:0];
+assign commit_pred_addr = commit_dest_addr[`PRED_ADDR_SIZE-1:0];
 
 // Writeback signals for write stage (wr-reg is type 10, and wr-pred is type 11)
 assign wr_reg_en = ins_type[1] & ~ins_type[0];

@@ -5,7 +5,7 @@ module control_unit(
 	opcode,
 	// Outputs - Control Signals
 	invalid_op,
-	dest_reg_valid,
+	reg_dest_valid,
 	reg_src1_valid,
 	reg_src2_valid,
 	pred_dest_valid,
@@ -37,7 +37,7 @@ input	[`OPCODE_SIZE-1:0]	opcode;
 
 //Outputs
 output 	invalid_op;
-output 	dest_reg_valid;
+output 	reg_dest_valid;
 output 	reg_src1_valid;
 output 	reg_src2_valid;
 output 	pred_dest_valid;
@@ -61,7 +61,7 @@ output	[3:0]		latency;
 
 // Registers for storing signal data
 reg 	invalid_op_reg[0:NUM_OPS];
-reg 	dest_reg_valid_reg[0:NUM_OPS];
+reg 	reg_dest_valid_reg[0:NUM_OPS];
 reg 	reg_src1_valid_reg[0:NUM_OPS];
 reg 	reg_src2_valid_reg[0:NUM_OPS];
 reg 	pred_dest_valid_reg[0:NUM_OPS];
@@ -85,7 +85,7 @@ reg	[3:0]		latency_reg[0:NUM_OPS];
 
 // Output control signals
 assign invalid_op = invalid_op_reg[opcode];
-assign dest_reg_valid = dest_reg_valid_reg[opcode];
+assign reg_dest_valid = reg_dest_valid_reg[opcode];
 assign reg_src1_valid = reg_src1_valid_reg[opcode];
 assign reg_src2_valid = reg_src2_valid_reg[opcode];
 assign pred_dest_valid = pred_dest_valid_reg[opcode];
@@ -112,8 +112,8 @@ always @(posedge clk) begin
 	if (reset) begin
 		// NOP - 0x00
 		invalid_op_reg[0] <= 1'b0;
-		dest_reg_valid_reg[0] <= 1'b0;
-		reg_src1_valid_reg[0] <= 1'b0;
+		reg_dest_valid_reg[0] <= 1'b0;
+		reg_src1_valid_reg[0] <= 1'd0;
 		reg_src2_valid_reg[0] <= 1'b0;
 		pred_dest_valid_reg[0] <= 1'b0;
 		pred_src1_valid_reg[0] <= 1'b0;
@@ -136,7 +136,7 @@ always @(posedge clk) begin
 
 		// DI - 0x01
 		invalid_op_reg[1] <= 1'b1;
-		dest_reg_valid_reg[1] <= 1'd0;
+		reg_dest_valid_reg[1] <= 1'd0;
 		reg_src1_valid_reg[1] <= 1'd0;
 		reg_src2_valid_reg[1] <= 1'd0;
 		pred_dest_valid_reg[1] <= 1'd0;
@@ -160,7 +160,7 @@ always @(posedge clk) begin
 
 		// EI - 0x02
 		invalid_op_reg[2] <= 1'b1;
-		dest_reg_valid_reg[2] <= 1'd0;
+		reg_dest_valid_reg[2] <= 1'd0;
 		reg_src1_valid_reg[2] <= 1'd0;
 		reg_src2_valid_reg[2] <= 1'd0;
 		pred_dest_valid_reg[2] <= 1'd0;
@@ -184,7 +184,7 @@ always @(posedge clk) begin
 
 		// TLBADD - 0x03
 		invalid_op_reg[3] <= 1'b1;
-		dest_reg_valid_reg[3] <= 1'd0;
+		reg_dest_valid_reg[3] <= 1'd0;
 		reg_src1_valid_reg[3] <= 1'd0;
 		reg_src2_valid_reg[3] <= 1'd0;
 		pred_dest_valid_reg[3] <= 1'd0;
@@ -208,7 +208,7 @@ always @(posedge clk) begin
 
 		// TLBFLUSH - 0x04
 		invalid_op_reg[4] <= 1'b1;
-		dest_reg_valid_reg[4] <= 1'd0;
+		reg_dest_valid_reg[4] <= 1'd0;
 		reg_src1_valid_reg[4] <= 1'd0;
 		reg_src2_valid_reg[4] <= 1'd0;
 		pred_dest_valid_reg[4] <= 1'd0;
@@ -232,7 +232,7 @@ always @(posedge clk) begin
 
 		// NEG - 0x05
 		invalid_op_reg[5] <= 1'b0;
-		dest_reg_valid_reg[5] <= 1'b1;
+		reg_dest_valid_reg[5] <= 1'b1;
 		reg_src1_valid_reg[5] <= 1'b1;
 		reg_src2_valid_reg[5] <= 1'b0;
 		pred_dest_valid_reg[5] <= 1'b0;
@@ -256,7 +256,7 @@ always @(posedge clk) begin
 
 		// NOT - 0x06
 		invalid_op_reg[6] <= 1'b0;
-		dest_reg_valid_reg[6] <= 1'b1;
+		reg_dest_valid_reg[6] <= 1'b1;
 		reg_src1_valid_reg[6] <= 1'b1;
 		reg_src2_valid_reg[6] <= 1'b1;
 		pred_dest_valid_reg[6] <= 1'b0;
@@ -280,7 +280,7 @@ always @(posedge clk) begin
 
 		// AND - 0x07
 		invalid_op_reg[7] <= 1'b0;
-		dest_reg_valid_reg[7] <= 1'b1;
+		reg_dest_valid_reg[7] <= 1'b1;
 		reg_src1_valid_reg[7] <= 1'b1;
 		reg_src2_valid_reg[7] <= 1'b1;
 		pred_dest_valid_reg[7] <= 1'b0;
@@ -304,7 +304,7 @@ always @(posedge clk) begin
 
 		// OR - 0x08
 		invalid_op_reg[8] <= 1'b0;
-		dest_reg_valid_reg[8] <= 1'b1;
+		reg_dest_valid_reg[8] <= 1'b1;
 		reg_src1_valid_reg[8] <= 1'b1;
 		reg_src2_valid_reg[8] <= 1'b1;
 		pred_dest_valid_reg[8] <= 1'b0;
@@ -328,7 +328,7 @@ always @(posedge clk) begin
 
 		// XOR - 0x09
 		invalid_op_reg[9] <= 1'b0;
-		dest_reg_valid_reg[9] <= 1'b1;
+		reg_dest_valid_reg[9] <= 1'b1;
 		reg_src1_valid_reg[9] <= 1'b1;
 		reg_src2_valid_reg[9] <= 1'b1;
 		pred_dest_valid_reg[9] <= 1'b0;
@@ -352,7 +352,7 @@ always @(posedge clk) begin
 
 		// ADD - 0x0a
 		invalid_op_reg[10] <= 1'b0;
-		dest_reg_valid_reg[10] <= 1'b1;
+		reg_dest_valid_reg[10] <= 1'b1;
 		reg_src1_valid_reg[10] <= 1'b1;
 		reg_src2_valid_reg[10] <= 1'b1;
 		pred_dest_valid_reg[10] <= 1'b0;
@@ -376,7 +376,7 @@ always @(posedge clk) begin
 
 		// SUB - 0x0b
 		invalid_op_reg[11] <= 1'b0;
-		dest_reg_valid_reg[11] <= 1'b1;
+		reg_dest_valid_reg[11] <= 1'b1;
 		reg_src1_valid_reg[11] <= 1'b1;
 		reg_src2_valid_reg[11] <= 1'b1;
 		pred_dest_valid_reg[11] <= 1'b0;
@@ -400,7 +400,7 @@ always @(posedge clk) begin
 
 		// MUL - 0x0c
 		invalid_op_reg[12] <= 1'b0;
-		dest_reg_valid_reg[12] <= 1'b1;
+		reg_dest_valid_reg[12] <= 1'b1;
 		reg_src1_valid_reg[12] <= 1'b1;
 		reg_src2_valid_reg[12] <= 1'b1;
 		pred_dest_valid_reg[12] <= 1'b0;
@@ -424,7 +424,7 @@ always @(posedge clk) begin
 
 		// DIV - 0x0d
 		invalid_op_reg[13] <= 1'b0;
-		dest_reg_valid_reg[13] <= 1'b1;
+		reg_dest_valid_reg[13] <= 1'b1;
 		reg_src1_valid_reg[13] <= 1'b1;
 		reg_src2_valid_reg[13] <= 1'b1;
 		pred_dest_valid_reg[13] <= 1'b0;
@@ -448,7 +448,7 @@ always @(posedge clk) begin
 
 		// MOD - 0x0e
 		invalid_op_reg[14] <= 1'b0;
-		dest_reg_valid_reg[14] <= 1'b1;
+		reg_dest_valid_reg[14] <= 1'b1;
 		reg_src1_valid_reg[14] <= 1'b1;
 		reg_src2_valid_reg[14] <= 1'b1;
 		pred_dest_valid_reg[14] <= 1'b0;
@@ -472,7 +472,7 @@ always @(posedge clk) begin
 
 		// SHL - 0x0f
 		invalid_op_reg[15] <= 1'b0;
-		dest_reg_valid_reg[15] <= 1'b1;
+		reg_dest_valid_reg[15] <= 1'b1;
 		reg_src1_valid_reg[15] <= 1'b1;
 		reg_src2_valid_reg[15] <= 1'b1;
 		pred_dest_valid_reg[15] <= 1'b0;
@@ -496,7 +496,7 @@ always @(posedge clk) begin
 
 		// SHR - 0x10
 		invalid_op_reg[16] <= 1'b0;
-		dest_reg_valid_reg[16] <= 1'b1;
+		reg_dest_valid_reg[16] <= 1'b1;
 		reg_src1_valid_reg[16] <= 1'b1;
 		reg_src2_valid_reg[16] <= 1'b1;
 		pred_dest_valid_reg[16] <= 1'b0;
@@ -520,7 +520,7 @@ always @(posedge clk) begin
 
 		// ANDI - 0x11
 		invalid_op_reg[17] <= 1'b0;
-		dest_reg_valid_reg[17] <= 1'b1;
+		reg_dest_valid_reg[17] <= 1'b1;
 		reg_src1_valid_reg[17] <= 1'b1;
 		reg_src2_valid_reg[17] <= 1'b0;
 		pred_dest_valid_reg[17] <= 1'b0;
@@ -544,7 +544,7 @@ always @(posedge clk) begin
 
 		// ORI - 0x12
 		invalid_op_reg[18] <= 1'b0;
-		dest_reg_valid_reg[18] <= 1'b1;
+		reg_dest_valid_reg[18] <= 1'b1;
 		reg_src1_valid_reg[18] <= 1'b1;
 		reg_src2_valid_reg[18] <= 1'b0;
 		pred_dest_valid_reg[18] <= 1'b0;
@@ -568,7 +568,7 @@ always @(posedge clk) begin
 
 		// XORI - 0x13
 		invalid_op_reg[19] <= 1'b0;
-		dest_reg_valid_reg[19] <= 1'b1;
+		reg_dest_valid_reg[19] <= 1'b1;
 		reg_src1_valid_reg[19] <= 1'b1;
 		reg_src2_valid_reg[19] <= 1'b0;
 		pred_dest_valid_reg[19] <= 1'b0;
@@ -592,7 +592,7 @@ always @(posedge clk) begin
 
 		// ADDI - 0x14
 		invalid_op_reg[20] <= 1'b0;
-		dest_reg_valid_reg[20] <= 1'b1;
+		reg_dest_valid_reg[20] <= 1'b1;
 		reg_src1_valid_reg[20] <= 1'b1;
 		reg_src2_valid_reg[20] <= 1'b0;
 		pred_dest_valid_reg[20] <= 1'b0;
@@ -616,7 +616,7 @@ always @(posedge clk) begin
 
 		// SUBI - 0x15
 		invalid_op_reg[21] <= 1'b0;
-		dest_reg_valid_reg[21] <= 1'b1;
+		reg_dest_valid_reg[21] <= 1'b1;
 		reg_src1_valid_reg[21] <= 1'b1;
 		reg_src2_valid_reg[21] <= 1'b0;
 		pred_dest_valid_reg[21] <= 1'b0;
@@ -640,7 +640,7 @@ always @(posedge clk) begin
 
 		// MULI - 0x16
 		invalid_op_reg[22] <= 1'b0;
-		dest_reg_valid_reg[22] <= 1'b1;
+		reg_dest_valid_reg[22] <= 1'b1;
 		reg_src1_valid_reg[22] <= 1'b1;
 		reg_src2_valid_reg[22] <= 1'b0;
 		pred_dest_valid_reg[22] <= 1'b0;
@@ -664,7 +664,7 @@ always @(posedge clk) begin
 
 		// DIVI - 0x17
 		invalid_op_reg[23] <= 1'b0;
-		dest_reg_valid_reg[23] <= 1'b1;
+		reg_dest_valid_reg[23] <= 1'b1;
 		reg_src1_valid_reg[23] <= 1'b1;
 		reg_src2_valid_reg[23] <= 1'b0;
 		pred_dest_valid_reg[23] <= 1'b0;
@@ -688,7 +688,7 @@ always @(posedge clk) begin
 
 		// MODI - 0x18
 		invalid_op_reg[24] <= 1'b0;
-		dest_reg_valid_reg[24] <= 1'b1;
+		reg_dest_valid_reg[24] <= 1'b1;
 		reg_src1_valid_reg[24] <= 1'b1;
 		reg_src2_valid_reg[24] <= 1'b0;
 		pred_dest_valid_reg[24] <= 1'b0;
@@ -712,7 +712,7 @@ always @(posedge clk) begin
 
 		// SHLI - 0x19
 		invalid_op_reg[25] <= 1'b0;
-		dest_reg_valid_reg[25] <= 1'b1;
+		reg_dest_valid_reg[25] <= 1'b1;
 		reg_src1_valid_reg[25] <= 1'b1;
 		reg_src2_valid_reg[25] <= 1'b0;
 		pred_dest_valid_reg[25] <= 1'b0;
@@ -736,7 +736,7 @@ always @(posedge clk) begin
 
 		// SHRI - 0x1a
 		invalid_op_reg[26] <= 1'b0;
-		dest_reg_valid_reg[26] <= 1'b1;
+		reg_dest_valid_reg[26] <= 1'b1;
 		reg_src1_valid_reg[26] <= 1'b1;
 		reg_src2_valid_reg[26] <= 1'b0;
 		pred_dest_valid_reg[26] <= 1'b0;
@@ -760,7 +760,7 @@ always @(posedge clk) begin
 
 		// JALI - 0x1b
 		invalid_op_reg[27] <= 1'b0;
-		dest_reg_valid_reg[27] <= 1'b1;
+		reg_dest_valid_reg[27] <= 1'b1;
 		reg_src1_valid_reg[27] <= 1'b1;
 		reg_src2_valid_reg[27] <= 1'b0;
 		pred_dest_valid_reg[27] <= 1'b0;
@@ -784,7 +784,7 @@ always @(posedge clk) begin
 
 		// JALR - 0x1c
 		invalid_op_reg[28] <= 1'b0;
-		dest_reg_valid_reg[28] <= 1'b1;
+		reg_dest_valid_reg[28] <= 1'b1;
 		reg_src1_valid_reg[28] <= 1'b1;
 		reg_src2_valid_reg[28] <= 1'b0;
 		pred_dest_valid_reg[28] <= 1'b0;
@@ -808,7 +808,7 @@ always @(posedge clk) begin
 
 		// JMPI - 0x1d
 		invalid_op_reg[29] <= 1'b0;
-		dest_reg_valid_reg[29] <= 1'b0;
+		reg_dest_valid_reg[29] <= 1'b0;
 		reg_src1_valid_reg[29] <= 1'b0;
 		reg_src2_valid_reg[29] <= 1'b0;
 		pred_dest_valid_reg[29] <= 1'b0;
@@ -832,7 +832,7 @@ always @(posedge clk) begin
 
 		// JMPR - 0x1e
 		invalid_op_reg[30] <= 1'b0;
-		dest_reg_valid_reg[30] <= 1'b0;
+		reg_dest_valid_reg[30] <= 1'b0;
 		reg_src1_valid_reg[30] <= 1'b1;
 		reg_src2_valid_reg[30] <= 1'b0;
 		pred_dest_valid_reg[30] <= 1'b0;
@@ -856,7 +856,7 @@ always @(posedge clk) begin
 
 		//  CLONE - 0x1f
 		invalid_op_reg[31] <= 1'b1;
-		dest_reg_valid_reg[31] <= 1'd0;
+		reg_dest_valid_reg[31] <= 1'd0;
 		reg_src1_valid_reg[31] <= 1'd0;
 		reg_src2_valid_reg[31] <= 1'd0;
 		pred_dest_valid_reg[31] <= 1'd0;
@@ -880,7 +880,7 @@ always @(posedge clk) begin
 
 		// JALIS - 0x20
 		invalid_op_reg[32] <= 1'b1;
-		dest_reg_valid_reg[32] <= 1'd0;
+		reg_dest_valid_reg[32] <= 1'd0;
 		reg_src1_valid_reg[32] <= 1'd0;
 		reg_src2_valid_reg[32] <= 1'd0;
 		pred_dest_valid_reg[32] <= 1'd0;
@@ -904,7 +904,7 @@ always @(posedge clk) begin
 
 		// JALRS - 0x21
 		invalid_op_reg[33] <= 1'b1;
-		dest_reg_valid_reg[33] <= 1'd0;
+		reg_dest_valid_reg[33] <= 1'd0;
 		reg_src1_valid_reg[33] <= 1'd0;
 		reg_src2_valid_reg[33] <= 1'd0;
 		pred_dest_valid_reg[33] <= 1'd0;
@@ -928,7 +928,7 @@ always @(posedge clk) begin
 
 		// JMPRT - 0x22
 		invalid_op_reg[34] <= 1'b1;
-		dest_reg_valid_reg[34] <= 1'd0;
+		reg_dest_valid_reg[34] <= 1'd0;
 		reg_src1_valid_reg[34] <= 1'd0;
 		reg_src2_valid_reg[34] <= 1'd0;
 		pred_dest_valid_reg[34] <= 1'd0;
@@ -952,7 +952,7 @@ always @(posedge clk) begin
 
 		// LD - 0x23
 		invalid_op_reg[35] <= 1'b0;
-		dest_reg_valid_reg[35] <= 1'b0;
+		reg_dest_valid_reg[35] <= 1'b0;
 		reg_src1_valid_reg[35] <= 1'b1;
 		reg_src2_valid_reg[35] <= 1'b1;
 		pred_dest_valid_reg[35] <= 1'b0;
@@ -976,7 +976,7 @@ always @(posedge clk) begin
 
 		// ST - 0x24
 		invalid_op_reg[36] <= 1'b0;
-		dest_reg_valid_reg[36] <= 1'b0;
+		reg_dest_valid_reg[36] <= 1'b0;
 		reg_src1_valid_reg[36] <= 1'b1;
 		reg_src2_valid_reg[36] <= 1'b1;
 		pred_dest_valid_reg[36] <= 1'b0;
@@ -1000,7 +1000,7 @@ always @(posedge clk) begin
 
 		// LDI - 0x25
 		invalid_op_reg[37] <= 1'b0;
-		dest_reg_valid_reg[37] <= 1'b0;
+		reg_dest_valid_reg[37] <= 1'b0;
 		reg_src1_valid_reg[37] <= 1'b1;
 		reg_src2_valid_reg[37] <= 1'b0;
 		pred_dest_valid_reg[37] <= 1'b0;
@@ -1024,7 +1024,7 @@ always @(posedge clk) begin
 
 		// ANDP - 0x27
 		invalid_op_reg[39] <= 1'b0;
-		dest_reg_valid_reg[39] <= 1'b0;
+		reg_dest_valid_reg[39] <= 1'b0;
 		reg_src1_valid_reg[39] <= 1'b0;
 		reg_src2_valid_reg[39] <= 1'b0;
 		pred_dest_valid_reg[39] <= 1'b1;
@@ -1048,7 +1048,7 @@ always @(posedge clk) begin
 
 		// ORP - 0x28
 		invalid_op_reg[40] <= 1'b0;
-		dest_reg_valid_reg[40] <= 1'b0;
+		reg_dest_valid_reg[40] <= 1'b0;
 		reg_src1_valid_reg[40] <= 1'b0;
 		reg_src2_valid_reg[40] <= 1'b0;
 		pred_dest_valid_reg[40] <= 1'b1;
@@ -1072,7 +1072,7 @@ always @(posedge clk) begin
 
 		// XORP - 0x29
 		invalid_op_reg[41] <= 1'b0;
-		dest_reg_valid_reg[41] <= 1'b0;
+		reg_dest_valid_reg[41] <= 1'b0;
 		reg_src1_valid_reg[41] <= 1'b0;
 		reg_src2_valid_reg[41] <= 1'b0;
 		pred_dest_valid_reg[41] <= 1'b1;
@@ -1096,7 +1096,7 @@ always @(posedge clk) begin
 
 		// NOTP - 0x2a
 		invalid_op_reg[42] <= 1'b0;
-		dest_reg_valid_reg[42] <= 1'b0;
+		reg_dest_valid_reg[42] <= 1'b0;
 		reg_src1_valid_reg[42] <= 1'b0;
 		reg_src2_valid_reg[42] <= 1'b0;
 		pred_dest_valid_reg[42] <= 1'b1;
@@ -1120,7 +1120,7 @@ always @(posedge clk) begin
 
 		// ISNEG - 0x2b
 		invalid_op_reg[43] <= 1'b0;
-		dest_reg_valid_reg[43] <= 1'b0;
+		reg_dest_valid_reg[43] <= 1'b0;
 		reg_src1_valid_reg[43] <= 1'b1;
 		reg_src2_valid_reg[43] <= 1'b0;
 		pred_dest_valid_reg[43] <= 1'b1;
@@ -1144,7 +1144,7 @@ always @(posedge clk) begin
 
 		// ISZERO - 0x2c
 		invalid_op_reg[44] <= 1'b0;
-		dest_reg_valid_reg[44] <= 1'b0;
+		reg_dest_valid_reg[44] <= 1'b0;
 		reg_src1_valid_reg[44] <= 1'b1;
 		reg_src2_valid_reg[44] <= 1'b0;
 		pred_dest_valid_reg[44] <= 1'b1;
@@ -1168,7 +1168,7 @@ always @(posedge clk) begin
 
 		// HALT - 0x2d
 		invalid_op_reg[45] <= 1'b1;
-		dest_reg_valid_reg[45] <= 1'd0;
+		reg_dest_valid_reg[45] <= 1'd0;
 		reg_src1_valid_reg[45] <= 1'd0;
 		reg_src2_valid_reg[45] <= 1'd0;
 		pred_dest_valid_reg[45] <= 1'd0;
@@ -1192,7 +1192,7 @@ always @(posedge clk) begin
 
 		// TRAP - 0x2e
 		invalid_op_reg[46] <= 1'b1;
-		dest_reg_valid_reg[46] <= 1'd0;
+		reg_dest_valid_reg[46] <= 1'd0;
 		reg_src1_valid_reg[46] <= 1'd0;
 		reg_src2_valid_reg[46] <= 1'd0;
 		pred_dest_valid_reg[46] <= 1'd0;
@@ -1216,7 +1216,7 @@ always @(posedge clk) begin
 
 		// JMPRU - 0x2f
 		invalid_op_reg[47] <= 1'b1;
-		dest_reg_valid_reg[47] <= 1'd0;
+		reg_dest_valid_reg[47] <= 1'd0;
 		reg_src1_valid_reg[47] <= 1'd0;
 		reg_src2_valid_reg[47] <= 1'd0;
 		pred_dest_valid_reg[47] <= 1'd0;
@@ -1240,7 +1240,7 @@ always @(posedge clk) begin
 
 		// SKEP - 0x30
 		invalid_op_reg[48] <= 1'b1;
-		dest_reg_valid_reg[48] <= 1'd0;
+		reg_dest_valid_reg[48] <= 1'd0;
 		reg_src1_valid_reg[48] <= 1'd0;
 		reg_src2_valid_reg[48] <= 1'd0;
 		pred_dest_valid_reg[48] <= 1'd0;
@@ -1264,7 +1264,7 @@ always @(posedge clk) begin
 
 		// RETI - 0x31
 		invalid_op_reg[49] <= 1'b1;
-		dest_reg_valid_reg[49] <= 1'd0;
+		reg_dest_valid_reg[49] <= 1'd0;
 		reg_src1_valid_reg[49] <= 1'd0;
 		reg_src2_valid_reg[49] <= 1'd0;
 		pred_dest_valid_reg[49] <= 1'd0;
@@ -1288,7 +1288,7 @@ always @(posedge clk) begin
 
 		// TLBRM - 0x32
 		invalid_op_reg[50] <= 1'b1;
-		dest_reg_valid_reg[50] <= 1'd0;
+		reg_dest_valid_reg[50] <= 1'd0;
 		reg_src1_valid_reg[50] <= 1'd0;
 		reg_src2_valid_reg[50] <= 1'd0;
 		pred_dest_valid_reg[50] <= 1'd0;
@@ -1312,7 +1312,7 @@ always @(posedge clk) begin
 
 		// ITOF - 0x33
 		invalid_op_reg[51] <= 1'b0;
-		dest_reg_valid_reg[51] <= 1'b1;
+		reg_dest_valid_reg[51] <= 1'b1;
 		reg_src1_valid_reg[51] <= 1'b1;
 		reg_src2_valid_reg[51] <= 1'b0;
 		pred_dest_valid_reg[51] <= 1'b0;
@@ -1336,7 +1336,7 @@ always @(posedge clk) begin
 
 		// FTOI - 0x34
 		invalid_op_reg[52] <= 1'b0;
-		dest_reg_valid_reg[52] <= 1'b1;
+		reg_dest_valid_reg[52] <= 1'b1;
 		reg_src1_valid_reg[52] <= 1'b1;
 		reg_src2_valid_reg[52] <= 1'b0;
 		pred_dest_valid_reg[52] <= 1'b0;
@@ -1360,7 +1360,7 @@ always @(posedge clk) begin
 
 		// FADD - 0x35
 		invalid_op_reg[53] <= 1'b0;
-		dest_reg_valid_reg[53] <= 1'b1;
+		reg_dest_valid_reg[53] <= 1'b1;
 		reg_src1_valid_reg[53] <= 1'b1;
 		reg_src2_valid_reg[53] <= 1'b1;
 		pred_dest_valid_reg[53] <= 1'b0;
@@ -1384,7 +1384,7 @@ always @(posedge clk) begin
 
 		// FSUB - 0x36
 		invalid_op_reg[54] <= 1'b0;
-		dest_reg_valid_reg[54] <= 1'b1;
+		reg_dest_valid_reg[54] <= 1'b1;
 		reg_src1_valid_reg[54] <= 1'b1;
 		reg_src2_valid_reg[54] <= 1'b1;
 		pred_dest_valid_reg[54] <= 1'b0;
@@ -1408,7 +1408,7 @@ always @(posedge clk) begin
 
 		// FMUL - 0x37
 		invalid_op_reg[55] <= 1'b0;
-		dest_reg_valid_reg[55] <= 1'b1;
+		reg_dest_valid_reg[55] <= 1'b1;
 		reg_src1_valid_reg[55] <= 1'b1;
 		reg_src2_valid_reg[55] <= 1'b1;
 		pred_dest_valid_reg[55] <= 1'b0;
@@ -1432,7 +1432,7 @@ always @(posedge clk) begin
 
 		// FDIV - 0x38
 		invalid_op_reg[56] <= 1'b0;
-		dest_reg_valid_reg[56] <= 1'b1;
+		reg_dest_valid_reg[56] <= 1'b1;
 		reg_src1_valid_reg[56] <= 1'b1;
 		reg_src2_valid_reg[56] <= 1'b1;
 		pred_dest_valid_reg[56] <= 1'b0;
@@ -1456,7 +1456,7 @@ always @(posedge clk) begin
 
 		// FNEG - 0x39
 		invalid_op_reg[57] <= 1'b0;
-		dest_reg_valid_reg[57] <= 1'b1;
+		reg_dest_valid_reg[57] <= 1'b1;
 		reg_src1_valid_reg[57] <= 1'b1;
 		reg_src2_valid_reg[57] <= 1'b0;
 		pred_dest_valid_reg[57] <= 1'b0;
@@ -1480,7 +1480,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3a
 		invalid_op_reg[58] <= 1'b1;
-		dest_reg_valid_reg[58] <= 1'd0;
+		reg_dest_valid_reg[58] <= 1'd0;
 		reg_src1_valid_reg[58] <= 1'd0;
 		reg_src2_valid_reg[58] <= 1'd0;
 		pred_dest_valid_reg[58] <= 1'd0;
@@ -1504,7 +1504,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3b
 		invalid_op_reg[59] <= 1'b1;
-		dest_reg_valid_reg[59] <= 1'd0;
+		reg_dest_valid_reg[59] <= 1'd0;
 		reg_src1_valid_reg[59] <= 1'd0;
 		reg_src2_valid_reg[59] <= 1'd0;
 		pred_dest_valid_reg[59] <= 1'd0;
@@ -1528,7 +1528,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3c
 		invalid_op_reg[60] <= 1'b1;
-		dest_reg_valid_reg[60] <= 1'd0;
+		reg_dest_valid_reg[60] <= 1'd0;
 		reg_src1_valid_reg[60] <= 1'd0;
 		reg_src2_valid_reg[60] <= 1'd0;
 		pred_dest_valid_reg[60] <= 1'd0;
@@ -1552,7 +1552,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3d
 		invalid_op_reg[61] <= 1'b1;
-		dest_reg_valid_reg[61] <= 1'd0;
+		reg_dest_valid_reg[61] <= 1'd0;
 		reg_src1_valid_reg[61] <= 1'd0;
 		reg_src2_valid_reg[61] <= 1'd0;
 		pred_dest_valid_reg[61] <= 1'd0;
@@ -1576,7 +1576,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3e
 		invalid_op_reg[62] <= 1'b1;
-		dest_reg_valid_reg[62] <= 1'd0;
+		reg_dest_valid_reg[62] <= 1'd0;
 		reg_src1_valid_reg[62] <= 1'd0;
 		reg_src2_valid_reg[62] <= 1'd0;
 		pred_dest_valid_reg[62] <= 1'd0;
@@ -1600,7 +1600,7 @@ always @(posedge clk) begin
 
 		// UNUSED - 0x3f
 		invalid_op_reg[63] <= 1'b1;
-		dest_reg_valid_reg[63] <= 1'd0;
+		reg_dest_valid_reg[63] <= 1'd0;
 		reg_src1_valid_reg[63] <= 1'd0;
 		reg_src2_valid_reg[63] <= 1'd0;
 		pred_dest_valid_reg[63] <= 1'd0;

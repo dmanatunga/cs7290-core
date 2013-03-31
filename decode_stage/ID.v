@@ -8,6 +8,9 @@ module ID(
 	ins_is_nop,
 	next_pc,
 	// From EX stage
+	ex_is_nop,
+	ex_ins_type,
+	ex_dest_addr,
 	free_units,
 	//free_unit,
 	//free_unit_id,
@@ -83,6 +86,9 @@ input								reset;
 input	[`DATA_WIDTH-1:0]			next_pc;
 input	[`INS_WIDTH-1:0]			ins;
 input								ins_is_nop;
+input						ex_is_nop;
+input	[`INS_TYPE_SIZE-1:0]			ex_ins_type;
+input	[`DEST_ADDR_SIZE-1:0]			ex_dest_addr;
 input	[`NUM_FUNC_UNITS-1:0]			free_units;
 //input								free_unit;
 //input	[`FUNC_UNIT_OP_SIZE-1:0]	free_unit_id;
@@ -171,6 +177,11 @@ wire	[1:0]		br_type;
 wire							predicate_valid;
 wire 							resource_stall;
 wire 							issue;
+
+wire                               issue_reg_dest_valid;
+wire   [REG_ADDR_SIZE-1:0]         issue_reg_dest_addr;
+wire                               issue_pred_dest_valid;
+wire   [PRED_ADDR_SIZE-1:0]        issue_pred_dest_addr;
 
 // Decode instruction to its componenets
 assign pred_ins = ins[`INS_WIDTH-1];
@@ -281,6 +292,10 @@ mux2to1 #(.DATA_WIDTH(`PRED_DATA_WIDTH))
     .out(predicate)
 );
 
+assign issue_reg_dest_valid = ex_ins_type[1] & ~ex_ins_type[0];
+assign issue_pred_dest_valid = ex_ins_type[1] & ex_ins_type[0];
+assign issue_reg_dest_addr = ex_dest_addr[`REG_ADDR_SIZE-1:0];
+assign issue_pred_dest_addr = ex_pred_addr[`PRED_ADDR_SIZE-1:0];
 // Scoreboarding mechanism 
 scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
              .PRED_ADDR_SIZE(`PRED_ADDR_SIZE),
@@ -310,8 +325,11 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .free_units(free_units),
 //    .free_unit(free_unit),
 //    .free_unit_id(free_unit_id),
-    .issue(issue),
-	
+    .issue(ex_nop),
+    .issue_reg_dest_valid(issue_reg_dest_valid),
+    .issue_reg_dest_addr(issue_reg_dest_addr),
+    .issue_pred_dest_valid(issue_pred_dest_valid),
+    .issue_pred_dest_addr(issue_pred_dest_addr),
 	.predicate_valid(predicate_valid),
     .resource_stall(resource_stall)
 );
@@ -324,7 +342,7 @@ control_unit control(
     
 	.invalid_op(invalid_op),
     // Mainly used by ID stage
-    .dest_reg_valid(reg_dest_valid),
+    .reg_dest_valid(reg_dest_valid),
 	.reg_src1_valid(reg_src1_valid),
 	.reg_src2_valid(reg_src2_valid),
 	.pred_dest_valid(pred_dest_valid),
