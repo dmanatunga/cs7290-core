@@ -145,28 +145,25 @@ wire	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
 wire	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
 wire							wr_pred_en;
 wire	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
-<<<<<<< HEAD
 wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
 wire    [`NUM_FUNC_UNITS-1:0]ex_free_units;
 
-=======
-wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_en;
 
 // From WB stage to EX stage
 wire	commit_st;
->>>>>>> e8b9629950ab6d7c517d798ef15e3a22690e5c0d
 
 pipeline_control_unit pipeline(
 	.if_nop(if_nop),
 	.id_stalls_if(id_stalls_if),
 	.sel_br(if_sel_br),
-	.id(id_clr_latch),
+	.id_nop(id_clr_latch),
 	
 	.if_stall_latch(if_stall_latch),
 	.if_clr_latch(if_clr_latch)
 ); 
 
 assign icache_rw_out = 1'b0; // i-cache only ever reads
+assign icache_data_out = 0;
 // Instruction Fetch Stage
 IF if_stage(
 	.clk(clk), 
@@ -374,7 +371,7 @@ WB  wb(
     .dest_addr(wb_dest_addr), 
     .ins_type(wb_ins_type),
     .ins_data(wb_ins_data),
-    .ins_is_nop(wb_ins_is_nop),    
+    .is_nop(wb_ins_is_nop),    
     
     // To ID stage
     .commit_reg_addr(commit_reg_addr),
@@ -386,13 +383,9 @@ WB  wb(
     .wr_reg_data(wr_reg_data),
     .wr_pred_en(wr_pred_en),
     .wr_pred_addr(wr_pred_addr),
-<<<<<<< HEAD
-    .wr_pred_data(wr_pred_en)
-=======
-    .wr_pred_data(wr_pred_en),
+    .wr_pred_data(wr_pred_data),
     // To EX stage
     .commit_st(commit_st)
->>>>>>> e8b9629950ab6d7c517d798ef15e3a22690e5c0d
 );
 
 endmodule

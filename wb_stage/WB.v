@@ -22,17 +22,13 @@ module WB(
     commit_reg_addr,
     commit_pred_addr,
     rob_full,	
-<<<<<<< HEAD
     add_entry_id,
-=======
-    add_entry_id;
->>>>>>> e8b9629950ab6d7c517d798ef15e3a22690e5c0d
     wr_reg_en,
     wr_reg_addr,
     wr_reg_data,
     wr_pred_en,
     wr_pred_addr,
-    wr_pred_data
+    wr_pred_data,
     // To EX stage
     commit_st
 );
@@ -62,10 +58,10 @@ output				rob_full;
 output				add_entry_id;
 output				wr_reg_en;
 output	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
-output	[`REG_DATA_SIZE-1:0]	wr_reg_data;
+output	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
 output				wr_pred_en;
 output	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
-output	[`PRED_DATA_SIZE-1:0]	wr_pred_data;
+output	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
 output				commit_st;
 
 wire	commit;
@@ -80,9 +76,9 @@ wire	[`INS_TYPE_SIZE-1:0]	commit_ins_type;
 wire				commit_reg;
 wire				commit_pred;
 wire	[`REG_ADDR_SIZE-1:0]	arch_reg_addr;
-wire	[`REG_DATA_SIZE-1:0]	arch_reg_data;
+wire	[`REG_DATA_WIDTH-1:0]	arch_reg_data;
 wire	[`PRED_ADDR_SIZE-1:0]	arch_pred_addr;
-wire	[`PRED_DATA_SIZE-1:0]	arch_pred_data;
+wire	[`PRED_DATA_WIDTH-1:0]	arch_pred_data;
 
 // If instruction is head, then write data to physical and architectural file
 assign ins_is_head = ~is_nop & (ins_rob_id == head_id);
@@ -100,7 +96,7 @@ assign wr_reg_en = ins_type[1] & ~ins_type[0];
 assign wr_pred_en = ins_type[1] & ins_type[0];
 
 // Indicate if rob_full based on full signal, or if we are commiting
-assign is_rob_full = ~commit & is_rob_full;
+assign rob_full = ~commit & is_rob_full;
 
 // Decoder to generate commit signals
 decoder_2bit commit_decoder(
@@ -113,12 +109,12 @@ decoder_2bit commit_decoder(
 );
 
 // Get data for register or predicate register
-assign wr_reg_data = ins_data[`REG_DATA_SIZE-1:0];
-assign wr_pred_data = ins_data[`PRED_DATA_SIZE-1:0];
+assign wr_reg_data = ins_data[`REG_DATA_WIDTH-1:0];
+assign wr_pred_data = ins_data[`PRED_DATA_WIDTH-1:0];
 
 // Arch. Register File
-register_file_0r1w_asyncRposW #(.DATA_WIDTH(`REG_DATA_SIZE), 
-								.REG_ADDR_SIZE(`REG_ADDR_SIZE)) 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`REG_DATA_WIDTH), 
+								.ADDR_SIZE(`REG_ADDR_SIZE)) 
   arch_register_file(
     .clk(clk),
     .reset(reset),
@@ -128,7 +124,7 @@ register_file_0r1w_asyncRposW #(.DATA_WIDTH(`REG_DATA_SIZE),
 );
 
 // Arch. Predicate Register File
-register_file_0r1w_asyncRposW #(.DATA_WIDTH(`PRED_DATA_SIZE), 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`PRED_DATA_WIDTH), 
 								.ADDR_SIZE(`PRED_ADDR_SIZE)) 
   arch_predicate_file(
     .clk(clk),
@@ -154,7 +150,7 @@ rob_unit #(.ROB_ADDR_SIZE(`ROB_ID_SIZE),
     
     .head_id(head_id),
 	.tail_id(add_entry_id),
-    .head_finished(head_finished),
+    .head_state(head_finished),
     .head_dest_addr(commit_dest_addr),
     .head_ins_type(commit_ins_type),
     .is_full(is_rob_full)

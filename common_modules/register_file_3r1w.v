@@ -1,4 +1,4 @@
-module register_file (
+module register_file_3r1w (
   // Inputs
   clk,
   reset,
@@ -48,19 +48,14 @@ assign data3 = reg_file[rd_addr3];
 
 // Write register phase
 always @(negedge clk) begin
-  if (wr_en)
-    begin
-      reg_file[wr_addr] <= wr_data;
-    end
-end
-
-// Reset Register File
-always @(posedge clk) begin
   if (reset) begin
     for (i = 0; i < NUM_REG; i = i + 1) begin
       reg_file[i] <= 0;
     end
+  end else if (wr_en) begin
+    reg_file[wr_addr] <= wr_data;
   end
 end
+
     
 endmodule

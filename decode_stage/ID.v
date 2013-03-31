@@ -137,7 +137,7 @@ output	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
 
 
 // Instruction values
-wire                            is_pred_ins;
+wire                            pred_ins;
 wire	[`PRED_ADDR_SIZE-1:0]   pred_addr;
 wire    [`OPCODE_SIZE-1:0]      opcode;
 wire    [`REG_ADDR_SIZE-1:0]    reg_dest_addr;
@@ -165,16 +165,15 @@ wire 							pred_src1_valid;
 wire 							pred_src2_valid;
 wire 							dest_is_src;
 wire 							pred_src_reg;
-wire	[`INS_TYPE_SIZE-1:0]	ctrl_ins_type;
 wire							br_ins;
-wire	[`BR_TYPE_SIZE-1:0]		br_type;
+wire	[1:0]		br_type;
 
 wire							predicate_valid;
 wire 							resource_stall;
 wire 							issue;
 
 // Decode instruction to its componenets
-assign is_pred_ins = ins[`INS_WIDTH-1];
+assign pred_ins = ins[`INS_WIDTH-1];
 assign pred_addr = ins[INS_PRED_REG_LOW + `PRED_ADDR_SIZE - 1:INS_PRED_REG_LOW];
 
 assign opcode = ins[INS_OPCODE_LOW + `OPCODE_SIZE - 1:INS_OPCODE_LOW];
@@ -278,7 +277,7 @@ mux2to1 #(.DATA_WIDTH(`PRED_DATA_WIDTH))
   m1(
     .a(`PRED_DATA_WIDTH'b1), 
     .b(pred_val), 
-    .sel(is_pred_ins), 
+    .sel(pred_ins), 
     .out(predicate)
 );
 
@@ -290,15 +289,15 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .clk(clk),
     .reset(reset),
     .pred_addr(pred_addr),
-    .pred_valid(pred_ins),
-    .dest_reg_addr(reg_dest_addr),
-    .dest_reg_valid(reg_dest_valid),
+    .pred_ins(pred_ins),
+    .reg_dest_addr(reg_dest_addr),
+    .reg_dest_valid(reg_dest_valid),
     .reg_src1_addr(reg_src1_addr),
     .reg_src1_valid(reg_src1_valid),
     .reg_src2_addr(reg_src2_addr),
     .reg_src2_valid(reg_src2_valid),
-    .dest_pred_addr(pred_dest_addr),
-    .dest_pred_valid(pred_dest_valid),
+    .pred_dest_addr(pred_dest_addr),
+    .pred_dest_valid(pred_dest_valid),
     .pred_src1_addr(pred_src1_addr),
     .pred_src1_valid(pred_src1_valid),
     .pred_src2_addr(pred_src2_addr),
@@ -325,15 +324,15 @@ control_unit control(
     
 	.invalid_op(invalid_op),
     // Mainly used by ID stage
-    .dest_reg_valid(dest_reg_valid),
+    .dest_reg_valid(reg_dest_valid),
 	.reg_src1_valid(reg_src1_valid),
 	.reg_src2_valid(reg_src2_valid),
-	.dest_pred_valid(dest_pred_valid),
+	.pred_dest_valid(pred_dest_valid),
 	.pred_src1_valid(pred_src1_valid),
 	.pred_src2_valid(pred_src2_valid),
 	.dest_is_src(dest_is_src),
 	.pred_src_reg(pred_src_reg),
-	.ins_type(ctrl_ins_type),
+	.ins_type(ins_type),
 	.br_ins(br_ins),
 	.br_type(br_type),
 	// Mainly used by EX stage
@@ -378,7 +377,7 @@ assign ins_id = entry_id;
 // WB stage values
 assign add_rob_entry = ~id_stalls_if;
 assign entry_dest_addr = dest_addr;
-assign entry_ins_type = {{`INS_TYPE_SIZE}{predicate}} & ins_type;
+assign entry_ins_type = predicate ? ins_type : `INS_TYPE_SIZE'b0;
 assign entry_ins_state = ~predicate;
 // Selecting branch value
 assign sel_br = br_ins & issue;	

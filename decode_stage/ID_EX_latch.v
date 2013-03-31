@@ -47,7 +47,7 @@ module ID_EX_latch(
   out_ins_nop		,
   out_muxa		,
   out_muxb		,
-  out_next_pc		,
+  out_next_pc		
 );
 
 // Inputs

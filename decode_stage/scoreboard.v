@@ -23,6 +23,10 @@ module scoreboard(
     wr_pred_addr,
     free_units,
     issue,
+    issue_reg_dest_valid,
+    issue_reg_dest_addr,
+    issue_pred_dest_valid,
+    issue_pred_dest_addr,
 //    free_unit,
 //    free_unit_id,
 //    mem_ins,
@@ -70,6 +74,10 @@ input	[NUM_FUNC_UNITS-1:0]	    free_units;
 //input                               free_unit;
 //input   [FUNC_UNIT_OP_SIZE-1:0]     free_unit_id;
 input                               issue;
+input                               issue_reg_dest_valid;
+input   [REG_ADDR_SIZE-1:0]         issue_reg_dest_addr;
+input                               issue_pred_dest_valid;
+input   [PRED_ADDR_SIZE-1:0]        issue_pred_dest_addr;
 //input                               mem_ins;
 //input                               mem_busy;
 
@@ -131,21 +139,6 @@ assign resource_stall = pred_busy |
 
 // Set the write register back to not busy and indicate certain functional units as free
 always @(negedge clk) begin
-  if (wr_reg) begin
-    reg_file_busy[wr_reg_addr] <= 1'b0;
-  end
-  if (wr_pred) begin
-    pred_file_busy[wr_pred_addr] <= 1'b0;
-  end
-  /*
-  if (free_unit) begin
-    func_unit_busy[free_unit_id] <= 1'b0;
-  end
-  */
-end
-
-// If instruction issued, then set destination register to invalid
-always @(posedge clk) begin
   if (reset) begin
     for (i1 = 0; i1 < REG_FILE_SIZE; i1 = i1 + 1) begin
       reg_file_busy[i1] <= 1'b0;
@@ -157,18 +150,20 @@ always @(posedge clk) begin
     //  func_unit_busy[i2] <= 1'b0;
     //end
   end else begin
-    if (issue && reg_dest_valid) begin
-      reg_file_busy[reg_dest_addr] <= 1'b1;
-    end
-    if (issue && pred_dest_valid) begin
-      pred_file_busy[pred_dest_addr] <= 1'b1;
-    end
-    /*
-    if (issue) begin
-      func_unit_busy[func_unit] <= 1'b1;   
-    end
-    */
+  	if (wr_reg) begin
+  	  reg_file_busy[wr_reg_addr] <= 1'b0;
+  	end
+  	if (wr_pred) begin
+  	  pred_file_busy[wr_pred_addr] <= 1'b0;
+  	end
+    	if (issue && issue_reg_dest_valid) begin
+           reg_file_busy[issue_reg_dest_addr] <= 1'b1;
+        end
+        if (issue && issue_pred_dest_valid) begin
+           pred_file_busy[issue_pred_dest_addr] <= 1'b1;
+    	end
   end
-end    
+end
+
 
 endmodule

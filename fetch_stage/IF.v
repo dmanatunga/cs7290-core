@@ -41,7 +41,7 @@ output reg	[`FETCH_ID_SIZE-1:0]	fetch_id;
 output								fetch_valid;
 // To ex stage
 output	[`DATA_WIDTH-1:0]		next_pc;
-output	[`INS_SIZE-1:0]			ins;
+output	[`INS_WIDTH-1:0]			ins;
 output							ins_is_nop;
 
 reg	[`DATA_WIDTH-1:0]	pc;
@@ -86,7 +86,7 @@ always @(posedge clk) begin
 				end else begin
 					pc <= next_pc;
 				end
-				fetch_id <= fetch_id + 1;
+				fetch_id <= fetch_id + `FETCH_ID_SIZE'd1;
 				fetch_ready <= 1'b1;
 			end
 		end else begin
@@ -100,13 +100,13 @@ always @(posedge clk) begin
 					end else begin
 						pc <= next_pc;
 					end
-					fetch_id <= fetch_id + 1;
+					fetch_id <= fetch_id + `FETCH_ID_SIZE'd1;
 					fetch_ready <= 1'b1;
 				end
 			end else begin
 				if (sel_br) begin
 					pc <= br_target;
-					fetch_id <= fetch_id + 1;
+					fetch_id <= fetch_id + `FETCH_ID_SIZE'd1;
 					fetch_ready <= 1'b1;
 				end else begin
 					if (fetch_valid) begin

@@ -18,10 +18,10 @@ input					reset;
 input                   stall;
 input                   clr_latch;
 input	[`DATA_WIDTH-1:0]	in_next_pc;
-input	[`INS_SIZE-1:0]	in_ins;
+input	[`INS_WIDTH-1:0]	in_ins;
 // Outputs
 output reg	[`DATA_WIDTH-1:0]    out_next_pc;
-output reg	[`INS_SIZE-1:0]    out_ins;
+output reg	[`INS_WIDTH-1:0]    out_ins;
 output reg					   out_is_nop;
 
 

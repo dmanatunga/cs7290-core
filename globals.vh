@@ -1,5 +1,5 @@
 // Size of HARP Instruction
-`define INS_SIZE 32 
+`define INS_WIDTH 32 
 // Size of fetch queue ID
 `define FETCH_ID_SIZE 4
 // Size of HARP data
