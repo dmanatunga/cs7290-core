@@ -145,9 +145,16 @@ wire	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
 wire	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
 wire							wr_pred_en;
 wire	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
+<<<<<<< HEAD
 wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
 wire    [`NUM_FUNC_UNITS-1:0]ex_free_units;
 
+=======
+wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_en;
+
+// From WB stage to EX stage
+wire	commit_st;
+>>>>>>> e8b9629950ab6d7c517d798ef15e3a22690e5c0d
 
 pipeline_control_unit pipeline(
 	.if_nop(if_nop),
@@ -359,7 +366,7 @@ WB  wb(
 	.add_rob_entry(add_rob_entry),
     .entry_dest_addr(entry_dest_addr),
     .entry_ins_type(entry_ins_type),
-	.entry_ins_state(entry_ins_state),
+    .entry_ins_state(entry_ins_state),
     .commit_reg_data(commit_reg_data),
     .commit_pred_data(commit_pred_data),
     // From EX-WB latch
@@ -367,19 +374,25 @@ WB  wb(
     .dest_addr(wb_dest_addr), 
     .ins_type(wb_ins_type),
     .ins_data(wb_ins_data),
-	.ins_is_nop(wb_ins_is_nop),    
+    .ins_is_nop(wb_ins_is_nop),    
     
     // To ID stage
     .commit_reg_addr(commit_reg_addr),
     .commit_pred_addr(commit_pred_addr),
-	.rob_full(rob_full), 
-	.add_entry_id(entry_id),
+    .rob_full(rob_full), 
+    .add_entry_id(entry_id),
     .wr_reg_en(wr_reg_en),
     .wr_reg_addr(wr_reg_addr),
     .wr_reg_data(wr_reg_data),
     .wr_pred_en(wr_pred_en),
     .wr_pred_addr(wr_pred_addr),
+<<<<<<< HEAD
     .wr_pred_data(wr_pred_en)
+=======
+    .wr_pred_data(wr_pred_en),
+    // To EX stage
+    .commit_st(commit_st)
+>>>>>>> e8b9629950ab6d7c517d798ef15e3a22690e5c0d
 );
 
 endmodule
