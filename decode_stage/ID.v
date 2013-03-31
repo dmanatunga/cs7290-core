@@ -8,8 +8,9 @@ module ID(
 	ins_is_nop,
 	next_pc,
 	// From EX stage
-	free_unit,
-	free_unit_id,
+	free_units,
+	//free_unit,
+	//free_unit_id,
 	// From WB stage
 	rob_full,
 	entry_id,
@@ -40,7 +41,16 @@ module ID(
 	imm_0reg,
 	imm_1reg,
 	imm_2reg,
+	mem_ins,
 	mem_type,
+	func_unit,
+	muxa,
+	muxb,
+	alu_op,
+	complex_alu_op,
+	pred_op,
+	float_op,
+	latency,
   
 	// To WB stage
 	add_rob_entry,
@@ -72,8 +82,9 @@ input								clk;
 input	[`DATA_WIDTH-1:0]			next_pc;
 input	[`INS_WIDTH-1:0]			ins;
 input								ins_is_nop;
-input								free_unit;
-input	[`FUNC_UNIT_OP_SIZE-1:0]	free_unit_id;
+input	[`NUM_FUNC_UNITS-1:0]			free_units;
+//input								free_unit;
+//input	[`FUNC_UNIT_OP_SIZE-1:0]	free_unit_id;
 input								rob_full;
 input	[`ROB_ID_SIZE-1:0]			entry_id;
 input	[`REG_ADDR_SIZE-1:0]		commit_reg_addr;
@@ -103,6 +114,16 @@ output  [`PRED_DATA_WIDTH-1:0]	pred_src1;
 output	[`PRED_DATA_WIDTH-1:0]	pred_src2;
 output							id_stalls_if;
 // Output control signals
+output 	mem_ins;
+output 	mem_type;
+output	[2:0]		func_unit;
+output 	muxa;
+output	[1:0]		muxb;
+output	[2:0]		alu_op;
+output	[2:0]		complex_alu_op;
+output	[2:0]		pred_op;
+output	[2:0]		float_op;
+output	[3:0]		latency;
 
 // Output to WB stage
 output							add_rob_entry;
@@ -159,6 +180,7 @@ assign opcode = ins[INS_OPCODE_LOW + `OPCODE_SIZE - 1:INS_OPCODE_LOW];
 assign reg_dest_addr = ins[INS_REG_DEST_LOW + `REG_ADDR_SIZE - 1:INS_REG_DEST_LOW]; // Destination Register
 assign pred_srcReg_addr = ins[INS_PRED_SRCREG_LOW + `REG_ADDR_SIZE - 1:INS_PRED_SRCREG_LOW];
 // Identify src1 register address as either 
+	free_unit_id,
 mux2to1 #(.DATA_WIDTH(`REG_ADDR_SIZE)) 
   regSrc1Mux(
     .a(ins[INS_REG_SRC1_LOW + `REG_ADDR_SIZE - 1:INS_REG_SRC1_LOW]), 
@@ -225,7 +247,7 @@ register_file_4r1w #(.ADDR_SIZE(`PRED_ADDR_SIZE),
     .data1(pred_val),
     .data2(pred_src1),
     .data3(pred_src2),
-    .data4(commit_pred_data),
+    .data4(commit_pred_data)
 );
 
 // Sign Extenders for immediate values
@@ -280,15 +302,14 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .pred_src1_valid(pred_src1_valid),
     .pred_src2_addr(pred_src2_addr),
     .pred_src2_valid(pred_src2_valid),
-    .func_unit(func_unit_op),
+    .func_unit(func_unit),
     .wr_reg(wr_reg_en),
     .wr_reg_addr(wr_reg_addr),
     .wr_pred(wr_pred_en),
     .wr_pred_addr(wr_pred_addr),
-    .free_unit(free_unit),
-    .free_unit_id(free_unit_id),
-    .mem_ins(mem_ins),
-    .mem_busy(mem_busy),
+    .free_units(free_units),
+//    .free_unit(free_unit),
+//    .free_unit_id(free_unit_id),
     .issue(issue),
 	
 	.predicate_valid(predicate_valid),
@@ -315,10 +336,16 @@ control_unit control(
 	.br_ins(br_ins),
 	.br_type(br_type),
 	// Mainly used by EX stage
-	
-	mem_ins,
-	mem_type,
-	// Mainly used by WB stage
+	.mem_ins(mem_ins),
+	.mem_type(mem_type),
+	.func_unit(func_unit),
+	.muxa(muxa),
+	.muxb(muxb),
+	.alu_op(alu_op),
+	.complex_alu_op(complex(alu_op),
+	.pred_op(pred_op),
+	.float_op(float_op),
+	.latency(latency)
  
 );
 

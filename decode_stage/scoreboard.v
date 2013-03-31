@@ -21,10 +21,11 @@ module scoreboard(
     wr_reg_addr,
     wr_pred,
     wr_pred_addr,
-    free_unit,
-    free_unit_id,
-    mem_ins,
-    mem_busy,
+    free_units,
+//    free_unit,
+//    free_unit_id,
+//    mem_ins,
+//    mem_busy,
     
     // Outputs
 	predicate_valid,
@@ -64,11 +65,12 @@ input                               wr_reg;
 input   [REG_ADDR_SIZE-1:0]         wr_reg_addr;
 input                               wr_pred;
 input   [PRED_ADDR_SIZE-1:0]        wr_pred_addr;
-input                               free_unit;
-input   [FUNC_UNIT_OP_SIZE-1:0]     free_unit_id;
+input	[NUM_FUNC_UNITS-1:0]	    free_units;
+//input                               free_unit;
+//input   [FUNC_UNIT_OP_SIZE-1:0]     free_unit_id;
 input                               issue;
-input                               mem_ins;
-input                               mem_busy;
+//input                               mem_ins;
+//input                               mem_busy;
 
 // Outputs
 output	predicate_valid;
@@ -88,7 +90,7 @@ wire func_busy;
 // Busy bits for register files
 reg reg_file_busy[REG_FILE_SIZE-1:0];
 reg pred_file_busy[PRED_FILE_SIZE-1:0];
-reg func_unit_busy[NUM_FUNC_UNITS-1:0];
+//reg func_unit_busy[NUM_FUNC_UNITS-1:0];
 
 integer i1, i2, i3;
 
@@ -100,6 +102,7 @@ assign reg_src2_busy = reg_src2_valid & reg_file_busy[reg_src2_addr];
 assign pred_dest_busy = pred_dest_valid & pred_file_busy[pred_dest_addr];
 assign pred_src1_busy = pred_src1_valid & pred_file_busy[pred_src1_addr];
 assign pred_src2_busy = pred_src2_valid & pred_file_busy[pred_src2_addr];
+/*
 assign unit_busy = func_unit_busy[func_unit];
 
 // Mux to identify if instruction's functional unit is busy
@@ -110,6 +113,8 @@ mux2to1 #(.DATA_WIDTH(1))
     .sel(mem_ins),
     .out(func_busy)
 );
+*/
+assign func_busy = ~free_units[func_unit];
 // Identify if predicate valid
 assign predicate_valid = ~pred_busy;
 // Identify if we should stall due to a needed unit being busy
@@ -131,9 +136,11 @@ always @(negedge clk) begin
   if (wr_pred) begin
     pred_file_busy[wr_pred_addr] <= 1'b0;
   end
+  /*
   if (free_unit) begin
     func_unit_busy[free_unit_id] <= 1'b0;
   end
+  */
 end
 
 // If instruction issued, then set destination register to invalid
@@ -155,9 +162,11 @@ always @(posedge clk) begin
     if (issue && pred_dest_valid) begin
       pred_file_busy[pred_dest_addr] <= 1'b1;
     end
+    /*
     if (issue) begin
       func_unit_busy[func_unit] <= 1'b1;   
-    end  
+    end
+    */
   end
 end    
 
