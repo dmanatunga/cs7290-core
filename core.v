@@ -212,6 +212,9 @@ ID id(
 	.next_pc(id_next_pc),
 
 	// From EX stage
+	.ex_is_nop(ex_ins_nop),
+	.ex_ins_type(ex_ins_type),
+	.ex_dest_addr(ex_dest_addr),
 	.free_units(ex_free_units),
 	//.free_unit_id(ex_free_unit_id),
 	
