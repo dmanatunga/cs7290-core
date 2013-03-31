@@ -23,6 +23,9 @@ module exec_stage(
    float_op,
    ins_type,
    ins_nop,
+   muxa,
+   muxb,
+   next_pc,
    //outputs
    alu_out,
    ctrl_sigs_pass,	//only pass inst_type
@@ -65,9 +68,9 @@ parameter DEST_REG_SIZE = 3;
    input [2:0] float_op;
    input [2:0] ins_type;
    input       ins_nop;
-   //input [31:0] pc;
-   //input muxa;
-   //input [1:0] muxb;
+   input [31:0] next_pc;
+   input muxa;
+   input [1:0] muxb;
 
 //******Internal regs/wires******
    reg  [4:0]    		alu_counter     [NUM_ALU - 1 :0];
@@ -77,8 +80,10 @@ parameter DEST_REG_SIZE = 3;
    reg  [CTRL_WIDTH-1:0]   	alu_ctrl_sigs   [NUM_ALU - 1 :0];
    reg  [NUM_ALU - 1 :0]   	alu_done;
 
-   reg  [31:0]  alu_inA;
-   reg  [31:0]  alu_inB;
+   wire  [31:0]  alu_inA;
+   wire  [31:0]  alu_inB;
+   wire  	pred_srcB;
+   wire  	pred_srcA;
    wire [31:0]  result_alu0;
    wire [31:0]  result_alu1;
    wire [31:0]  result_alu2;
@@ -108,34 +113,51 @@ parameter DEST_REG_SIZE = 3;
 
 //******Input selection Mux start******
    assign mem_data_in = (mem_type) ? R2_DataSrcA 	: 32'h0000_0000;
-   assign mem_addr    = (is_mem)   ?(R2_DataSrcA + imm1): 32'h0000_0000;//FIX
+   assign mem_addr    = (is_mem)   ?(alu_inA + imm1): 32'h0000_0000;//FIX
    assign ctrl_pass   = {ctrl_sigs,ins_type};	//FIX
    assign func_unit   = (ins_nop == 1) ? DUMMY_ALU : func_select;
-   always@(*)                                           //specify a list of inputs!!
-   begin
-      case(ctrl_sigs)
-         6'h24,6'h23,6'h14,6'h15: begin                 //FIX replace this with `define
-                   alu_inA      = R2_DataSrcA;
-                   alu_inB      = imm2;
-                end
-         6'h1d : begin
-                   alu_inA      = R2_DataSrcA;
-                   alu_inB      = imm1;
-                end
-         6'h1e : begin
-                   alu_inA      = R2_DataSrcA;
-                   alu_inB      = imm3;
-                end
-         6'h0b:begin
-                   alu_inA      = R2_DataSrcA;
-                   alu_inB      = R3_DataSrcB;
-                end
-         default: begin
-                   alu_inA      = R2_DataSrcA;
-                   alu_inB      = R3_DataSrcB;
-                end
-      endcase
-   end
+
+mux2to1 #(.DATA_WIDTH(32)) 
+  regSrc1Mux(
+    .a		(next_pc), 
+    .b		(R2_DataSrcA),
+    .sel	(muxa),
+    .out	(alu_inA)
+);
+
+mux4to1 #(.DATA_WIDTH(32))
+  br_mux(
+	.A	(32'd0),
+	.B	(imm3),
+	.C	(imm2),
+	.D	(R3_DataSrcB),
+	.sel	(muxb),
+	.out	(alu_inB)
+);
+
+mux2to1 #(.DATA_WIDTH(32)) 
+  regSrc1Mux(
+    .a		(pred_src1), 
+    .b		(R2_DataSrcA),
+    .sel	(muxa),
+    .out	(pred_srcA)
+);
+
+assign pred_srcB = pred_src2;
+ 
+//   always@(*)                                           //specify a list of inputs!!
+//   begin
+//      case(ctrl_sigs)
+//         6'h24,6'h23,6'h14,6'h15: begin                 //FIX replace this with `define
+//                   alu_inA      = R2_DataSrcA;
+//                   alu_inB      = imm2;
+//                end
+//         default: begin
+//                   alu_inA      = R2_DataSrcA;
+//                   alu_inB      = R3_DataSrcB;
+//                end
+//      endcase
+//   end
 //******Input selection Mux end******
 
 
@@ -287,8 +309,8 @@ alu_complex alu_2(
         .result(result_alu2));
 
 alu_pred alu_3(
-        .srcA(pred_src1),
-        .srcB(pred_src2),
+        .srcA(pred_srcA),
+        .srcB(pred_srcB),
         .pred_op(pred_op),
         .result(result_alu3));
 //******ALU Blocks Instantiation end******
