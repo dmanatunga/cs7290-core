@@ -54,19 +54,20 @@ wire	[`DATA_WIDTH-1:0]	new_pc;
 
 
 assign fetch_addr = pc;
-assign ins = ins_queue;
-assign ins_is_nop = ~ins_queue_valid;
+assign ins_is_nop = ~(((fetch_id == mem_id) & mem_valid) | ins_queue_valid);
 
 assign next_pc = pc + 4;
 assign fetch_valid = fetch_ready & ~mem_stall;
 
 
-always @(negedge clk) begin
-	if (mem_valid && (fetch_id == mem_id)) begin
-		ins_queue <= mem_data;
-		ins_queue_valid <= 1'b1;
-	end
-end
+mux2to1 #(.DATA_WIDTH(`DATA_WIDTH))
+    ins_mux(
+      .a(mem_data),
+      .b(ins_queue),
+      .sel(ins_queue_valid),
+      .out(ins)
+);
+
 
 always @(posedge clk) begin
 	if (reset)	begin
@@ -77,24 +78,40 @@ always @(posedge clk) begin
 		ins_queue <= 0;
 		ins_queue_valid <= 0;
 	end else begin
-		if (!if_stall && ins_queue_valid) begin
-			ins_queue_valid <= 1'b0;
-			if (sel_br) begin
-				pc <= br_target;
-			end else begin
-				pc <= next_pc;
-			end
-			fetch_id <= fetch_id + 1;
-			fetch_ready <= 1'b1;
-		end else begin
-			if (sel_br) begin
-				pc <= br_target;
+		if (ins_queue_valid) begin
+			if (!if_stall) begin
 				ins_queue_valid <= 1'b0;
+				if (sel_br) begin
+					pc <= br_target;
+				end else begin
+					pc <= next_pc;
+				end
 				fetch_id <= fetch_id + 1;
 				fetch_ready <= 1'b1;
+			end
+		end else begin
+			if (mem_valid) begin
+				if (if_stall) begin
+					ins_queue_valid <= 1'b1;
+					ins_queue <= mem_data;
+				end else begin
+					if (sel_br) begin
+						pc <= br_target;
+					end else begin
+						pc <= next_pc;
+					end
+					fetch_id <= fetch_id + 1;
+					fetch_ready <= 1'b1;
+				end
 			end else begin
-				if (fetch_valid) begin
-					fetch_ready <= 0;
+				if (sel_br) begin
+					pc <= br_target;
+					fetch_id <= fetch_id + 1;
+					fetch_ready <= 1'b1;
+				end else begin
+					if (fetch_valid) begin
+						fetch_ready <= 0;
+					end
 				end
 			end
 		end
