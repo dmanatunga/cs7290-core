@@ -97,6 +97,28 @@ wire	[`ROB_ID_SIZE-1:0]	id_ins_id;
 wire	id_muxa;
 wire	[1:0]	id_muxb;
 
+wire	ex_ins_nop;
+wire	[`DEST_ADDR_SIZE-1:0]	ex_dest_addr;
+wire	[`REG_DATA_WIDTH-1:0]	ex_reg_src1;
+wire	[`REG_DATA_WIDTH-1:0]	ex_reg_src2;
+wire	[`DATA_WIDTH-1:0]	ex_imm_0reg;
+wire	[`DATA_WIDTH-1:0]	ex_imm_1reg;
+wire	[`DATA_WIDTH-1:0]	ex_imm_2reg;
+wire	[`PRED_DATA_WIDTH-1:0]	ex_pred_src1;
+wire	[`PRED_DATA_WIDTH-1:0]	ex_pred_src2;
+wire	[3:0]	ex_latency;
+wire	[`INS_TYPE_SIZE-1:0]	ex_ins_type;
+wire	[2:0]	ex_func_select;
+wire	ex_mem_type;
+wire	ex_is_mem;
+wire	[2:0]	ex_simple_alu_op;
+wire	[2:0]	ex_complex_alu_op;
+wire	[2:0]	ex_pred_op;
+wire	[2:0]	ex_float_op;
+wire	[`ROB_ID_SIZE-1:0]	ex_ins_id;
+wire	ex_muxa;
+wire	[1:0]	ex_muxb;
+
 // From ID stage to WB stage
 wire							add_rob_entry;
 wire	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
