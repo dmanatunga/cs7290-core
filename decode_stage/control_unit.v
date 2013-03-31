@@ -57,7 +57,7 @@ output	[2:0]		alu_op;
 output	[2:0]		complex_alu_op;
 output	[2:0]		pred_op;
 output	[2:0]		float_op;
-output 	latency;
+output	[3:0]		latency;
 
 // Registers for storing signal data
 reg 	invalid_op_reg[0:NUM_OPS];
@@ -81,7 +81,7 @@ reg	[2:0]		alu_op_reg[0:NUM_OPS];
 reg	[2:0]		complex_alu_op_reg[0:NUM_OPS];
 reg	[2:0]		pred_op_reg[0:NUM_OPS];
 reg	[2:0]		float_op_reg[0:NUM_OPS];
-reg 	latency_reg[0:NUM_OPS];
+reg	[3:0]		latency_reg[0:NUM_OPS];
 
 // Output control signals
 assign invalid_op = invalid_op_reg[opcode];
@@ -132,7 +132,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[0] <= 3'b000;
 		pred_op_reg[0] <= 3'b000;
 		float_op_reg[0] <= 3'b000;
-		latency_reg[0] <= 1'b1;
+		latency_reg[0] <= 4'b0001;
 
 		// DI - 0x01
 		invalid_op_reg[1] <= 1'b1;
@@ -156,7 +156,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[1] <= 3'd0;
 		pred_op_reg[1] <= 3'd0;
 		float_op_reg[1] <= 3'd0;
-		latency_reg[1] <= 1'd0;
+		latency_reg[1] <= 4'd0;
 
 		// EI - 0x02
 		invalid_op_reg[2] <= 1'b1;
@@ -180,7 +180,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[2] <= 3'd0;
 		pred_op_reg[2] <= 3'd0;
 		float_op_reg[2] <= 3'd0;
-		latency_reg[2] <= 1'd0;
+		latency_reg[2] <= 4'd0;
 
 		// TLBADD - 0x03
 		invalid_op_reg[3] <= 1'b1;
@@ -204,7 +204,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[3] <= 3'd0;
 		pred_op_reg[3] <= 3'd0;
 		float_op_reg[3] <= 3'd0;
-		latency_reg[3] <= 1'd0;
+		latency_reg[3] <= 4'd0;
 
 		// TLBFLUSH - 0x04
 		invalid_op_reg[4] <= 1'b1;
@@ -228,7 +228,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[4] <= 3'd0;
 		pred_op_reg[4] <= 3'd0;
 		float_op_reg[4] <= 3'd0;
-		latency_reg[4] <= 1'd0;
+		latency_reg[4] <= 4'd0;
 
 		// NEG - 0x05
 		invalid_op_reg[5] <= 1'b0;
@@ -252,7 +252,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[5] <= 3'b000;
 		pred_op_reg[5] <= 3'b000;
 		float_op_reg[5] <= 3'b000;
-		latency_reg[5] <= 1'b1;
+		latency_reg[5] <= 4'b0001;
 
 		// NOT - 0x06
 		invalid_op_reg[6] <= 1'b0;
@@ -276,7 +276,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[6] <= 3'b000;
 		pred_op_reg[6] <= 3'b000;
 		float_op_reg[6] <= 3'b000;
-		latency_reg[6] <= 1'b1;
+		latency_reg[6] <= 4'b0001;
 
 		// AND - 0x07
 		invalid_op_reg[7] <= 1'b0;
@@ -300,7 +300,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[7] <= 3'b000;
 		pred_op_reg[7] <= 3'b000;
 		float_op_reg[7] <= 3'b000;
-		latency_reg[7] <= 1'b1;
+		latency_reg[7] <= 4'b0001;
 
 		// OR - 0x08
 		invalid_op_reg[8] <= 1'b0;
@@ -324,7 +324,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[8] <= 3'b000;
 		pred_op_reg[8] <= 3'b000;
 		float_op_reg[8] <= 3'b000;
-		latency_reg[8] <= 1'b1;
+		latency_reg[8] <= 4'b0001;
 
 		// XOR - 0x09
 		invalid_op_reg[9] <= 1'b0;
@@ -348,7 +348,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[9] <= 3'b000;
 		pred_op_reg[9] <= 3'b000;
 		float_op_reg[9] <= 3'b000;
-		latency_reg[9] <= 1'b1;
+		latency_reg[9] <= 4'b0001;
 
 		// ADD - 0x0a
 		invalid_op_reg[10] <= 1'b0;
@@ -372,7 +372,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[10] <= 3'b000;
 		pred_op_reg[10] <= 3'b000;
 		float_op_reg[10] <= 3'b000;
-		latency_reg[10] <= 1'b1;
+		latency_reg[10] <= 4'b0001;
 
 		// SUB - 0x0b
 		invalid_op_reg[11] <= 1'b0;
@@ -396,7 +396,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[11] <= 3'b000;
 		pred_op_reg[11] <= 3'b000;
 		float_op_reg[11] <= 3'b000;
-		latency_reg[11] <= 1'b1;
+		latency_reg[11] <= 4'b0001;
 
 		// MUL - 0x0c
 		invalid_op_reg[12] <= 1'b0;
@@ -420,7 +420,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[12] <= 3'b001;
 		pred_op_reg[12] <= 3'b000;
 		float_op_reg[12] <= 3'b000;
-		latency_reg[12] <= 1'b4;
+		latency_reg[12] <= 4'b0100;
 
 		// DIV - 0x0d
 		invalid_op_reg[13] <= 1'b0;
@@ -444,7 +444,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[13] <= 3'b010;
 		pred_op_reg[13] <= 3'b000;
 		float_op_reg[13] <= 3'b000;
-		latency_reg[13] <= 1'b4;
+		latency_reg[13] <= 4'b0100;
 
 		// MOD - 0x0e
 		invalid_op_reg[14] <= 1'b0;
@@ -468,7 +468,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[14] <= 3'b011;
 		pred_op_reg[14] <= 3'b000;
 		float_op_reg[14] <= 3'b000;
-		latency_reg[14] <= 1'b4;
+		latency_reg[14] <= 4'b0100;
 
 		// SHL - 0x0f
 		invalid_op_reg[15] <= 1'b0;
@@ -492,7 +492,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[15] <= 3'b100;
 		pred_op_reg[15] <= 3'b000;
 		float_op_reg[15] <= 3'b000;
-		latency_reg[15] <= 1'b1;
+		latency_reg[15] <= 4'b0001;
 
 		// SHR - 0x10
 		invalid_op_reg[16] <= 1'b0;
@@ -516,7 +516,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[16] <= 3'b101;
 		pred_op_reg[16] <= 3'b000;
 		float_op_reg[16] <= 3'b000;
-		latency_reg[16] <= 1'b1;
+		latency_reg[16] <= 4'b0001;
 
 		// ANDI - 0x11
 		invalid_op_reg[17] <= 1'b0;
@@ -540,7 +540,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[17] <= 3'b000;
 		pred_op_reg[17] <= 3'b000;
 		float_op_reg[17] <= 3'b000;
-		latency_reg[17] <= 1'b1;
+		latency_reg[17] <= 4'b0001;
 
 		// ORI - 0x12
 		invalid_op_reg[18] <= 1'b0;
@@ -564,7 +564,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[18] <= 3'b000;
 		pred_op_reg[18] <= 3'b000;
 		float_op_reg[18] <= 3'b000;
-		latency_reg[18] <= 1'b1;
+		latency_reg[18] <= 4'b0001;
 
 		// XORI - 0x13
 		invalid_op_reg[19] <= 1'b0;
@@ -588,7 +588,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[19] <= 3'b000;
 		pred_op_reg[19] <= 3'b000;
 		float_op_reg[19] <= 3'b000;
-		latency_reg[19] <= 1'b1;
+		latency_reg[19] <= 4'b0001;
 
 		// ADDI - 0x14
 		invalid_op_reg[20] <= 1'b0;
@@ -612,7 +612,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[20] <= 3'b000;
 		pred_op_reg[20] <= 3'b000;
 		float_op_reg[20] <= 3'b000;
-		latency_reg[20] <= 1'b1;
+		latency_reg[20] <= 4'b0001;
 
 		// SUBI - 0x15
 		invalid_op_reg[21] <= 1'b0;
@@ -636,7 +636,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[21] <= 3'b000;
 		pred_op_reg[21] <= 3'b000;
 		float_op_reg[21] <= 3'b000;
-		latency_reg[21] <= 1'b1;
+		latency_reg[21] <= 4'b0001;
 
 		// MULI - 0x16
 		invalid_op_reg[22] <= 1'b0;
@@ -660,7 +660,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[22] <= 3'b001;
 		pred_op_reg[22] <= 3'b000;
 		float_op_reg[22] <= 3'b000;
-		latency_reg[22] <= 1'b1;
+		latency_reg[22] <= 4'b0001;
 
 		// DIVI - 0x17
 		invalid_op_reg[23] <= 1'b0;
@@ -684,7 +684,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[23] <= 3'b010;
 		pred_op_reg[23] <= 3'b000;
 		float_op_reg[23] <= 3'b000;
-		latency_reg[23] <= 1'b1;
+		latency_reg[23] <= 4'b0001;
 
 		// MODI - 0x18
 		invalid_op_reg[24] <= 1'b0;
@@ -708,7 +708,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[24] <= 3'b011;
 		pred_op_reg[24] <= 3'b000;
 		float_op_reg[24] <= 3'b000;
-		latency_reg[24] <= 1'b1;
+		latency_reg[24] <= 4'b0001;
 
 		// SHLI - 0x19
 		invalid_op_reg[25] <= 1'b0;
@@ -732,7 +732,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[25] <= 3'b100;
 		pred_op_reg[25] <= 3'b000;
 		float_op_reg[25] <= 3'b000;
-		latency_reg[25] <= 1'b1;
+		latency_reg[25] <= 4'b0001;
 
 		// SHRI - 0x1a
 		invalid_op_reg[26] <= 1'b0;
@@ -756,7 +756,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[26] <= 3'b101;
 		pred_op_reg[26] <= 3'b000;
 		float_op_reg[26] <= 3'b000;
-		latency_reg[26] <= 1'b1;
+		latency_reg[26] <= 4'b0001;
 
 		// JALI - 0x1b
 		invalid_op_reg[27] <= 1'b0;
@@ -780,7 +780,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[27] <= 3'b000;
 		pred_op_reg[27] <= 3'b000;
 		float_op_reg[27] <= 3'b000;
-		latency_reg[27] <= 1'b1;
+		latency_reg[27] <= 4'b0001;
 
 		// JALR - 0x1c
 		invalid_op_reg[28] <= 1'b0;
@@ -804,7 +804,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[28] <= 3'b000;
 		pred_op_reg[28] <= 3'b000;
 		float_op_reg[28] <= 3'b000;
-		latency_reg[28] <= 1'b1;
+		latency_reg[28] <= 4'b0001;
 
 		// JMPI - 0x1d
 		invalid_op_reg[29] <= 1'b0;
@@ -828,7 +828,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[29] <= 3'b000;
 		pred_op_reg[29] <= 3'b000;
 		float_op_reg[29] <= 3'b000;
-		latency_reg[29] <= 1'b1;
+		latency_reg[29] <= 4'b0001;
 
 		// JMPR - 0x1e
 		invalid_op_reg[30] <= 1'b0;
@@ -852,7 +852,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[30] <= 3'b000;
 		pred_op_reg[30] <= 3'b000;
 		float_op_reg[30] <= 3'b000;
-		latency_reg[30] <= 1'b1;
+		latency_reg[30] <= 4'b0001;
 
 		//  CLONE - 0x1f
 		invalid_op_reg[31] <= 1'b1;
@@ -876,7 +876,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[31] <= 3'd0;
 		pred_op_reg[31] <= 3'd0;
 		float_op_reg[31] <= 3'd0;
-		latency_reg[31] <= 1'd0;
+		latency_reg[31] <= 4'd0;
 
 		// JALIS - 0x20
 		invalid_op_reg[32] <= 1'b1;
@@ -900,7 +900,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[32] <= 3'd0;
 		pred_op_reg[32] <= 3'd0;
 		float_op_reg[32] <= 3'd0;
-		latency_reg[32] <= 1'd0;
+		latency_reg[32] <= 4'd0;
 
 		// JALRS - 0x21
 		invalid_op_reg[33] <= 1'b1;
@@ -924,7 +924,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[33] <= 3'd0;
 		pred_op_reg[33] <= 3'd0;
 		float_op_reg[33] <= 3'd0;
-		latency_reg[33] <= 1'd0;
+		latency_reg[33] <= 4'd0;
 
 		// JMPRT - 0x22
 		invalid_op_reg[34] <= 1'b1;
@@ -948,7 +948,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[34] <= 3'd0;
 		pred_op_reg[34] <= 3'd0;
 		float_op_reg[34] <= 3'd0;
-		latency_reg[34] <= 1'd0;
+		latency_reg[34] <= 4'd0;
 
 		// LD - 0x23
 		invalid_op_reg[35] <= 1'b0;
@@ -972,7 +972,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[35] <= 3'b000;
 		pred_op_reg[35] <= 3'b000;
 		float_op_reg[35] <= 3'b000;
-		latency_reg[35] <= 1'b1;
+		latency_reg[35] <= 4'b0001;
 
 		// ST - 0x24
 		invalid_op_reg[36] <= 1'b0;
@@ -996,7 +996,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[36] <= 3'b000;
 		pred_op_reg[36] <= 3'b000;
 		float_op_reg[36] <= 3'b000;
-		latency_reg[36] <= 1'b1;
+		latency_reg[36] <= 4'b0001;
 
 		// LDI - 0x25
 		invalid_op_reg[37] <= 1'b0;
@@ -1020,7 +1020,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[37] <= 3'b000;
 		pred_op_reg[37] <= 3'b000;
 		float_op_reg[37] <= 3'b000;
-		latency_reg[37] <= 1'b1;
+		latency_reg[37] <= 4'b0001;
 
 		// ANDP - 0x27
 		invalid_op_reg[39] <= 1'b0;
@@ -1044,7 +1044,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[39] <= 3'b000;
 		pred_op_reg[39] <= 3'b001;
 		float_op_reg[39] <= 3'b000;
-		latency_reg[39] <= 1'b1;
+		latency_reg[39] <= 4'b0001;
 
 		// ORP - 0x28
 		invalid_op_reg[40] <= 1'b0;
@@ -1068,7 +1068,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[40] <= 3'b000;
 		pred_op_reg[40] <= 3'b010;
 		float_op_reg[40] <= 3'b000;
-		latency_reg[40] <= 1'b1;
+		latency_reg[40] <= 4'b0001;
 
 		// XORP - 0x29
 		invalid_op_reg[41] <= 1'b0;
@@ -1092,7 +1092,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[41] <= 3'b000;
 		pred_op_reg[41] <= 3'b011;
 		float_op_reg[41] <= 3'b000;
-		latency_reg[41] <= 1'b1;
+		latency_reg[41] <= 4'b0001;
 
 		// NOTP - 0x2a
 		invalid_op_reg[42] <= 1'b0;
@@ -1116,7 +1116,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[42] <= 3'b000;
 		pred_op_reg[42] <= 3'b100;
 		float_op_reg[42] <= 3'b000;
-		latency_reg[42] <= 1'b1;
+		latency_reg[42] <= 4'b0001;
 
 		// ISNEG - 0x2b
 		invalid_op_reg[43] <= 1'b0;
@@ -1140,7 +1140,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[43] <= 3'b000;
 		pred_op_reg[43] <= 3'b101;
 		float_op_reg[43] <= 3'b000;
-		latency_reg[43] <= 1'b1;
+		latency_reg[43] <= 4'b0001;
 
 		// ISZERO - 0x2c
 		invalid_op_reg[44] <= 1'b0;
@@ -1164,7 +1164,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[44] <= 3'b000;
 		pred_op_reg[44] <= 3'b110;
 		float_op_reg[44] <= 3'b000;
-		latency_reg[44] <= 1'b1;
+		latency_reg[44] <= 4'b0001;
 
 		// HALT - 0x2d
 		invalid_op_reg[45] <= 1'b1;
@@ -1188,7 +1188,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[45] <= 3'd0;
 		pred_op_reg[45] <= 3'd0;
 		float_op_reg[45] <= 3'd0;
-		latency_reg[45] <= 1'd0;
+		latency_reg[45] <= 4'd0;
 
 		// TRAP - 0x2e
 		invalid_op_reg[46] <= 1'b1;
@@ -1212,7 +1212,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[46] <= 3'd0;
 		pred_op_reg[46] <= 3'd0;
 		float_op_reg[46] <= 3'd0;
-		latency_reg[46] <= 1'd0;
+		latency_reg[46] <= 4'd0;
 
 		// JMPRU - 0x2f
 		invalid_op_reg[47] <= 1'b1;
@@ -1236,7 +1236,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[47] <= 3'd0;
 		pred_op_reg[47] <= 3'd0;
 		float_op_reg[47] <= 3'd0;
-		latency_reg[47] <= 1'd0;
+		latency_reg[47] <= 4'd0;
 
 		// SKEP - 0x30
 		invalid_op_reg[48] <= 1'b1;
@@ -1260,7 +1260,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[48] <= 3'd0;
 		pred_op_reg[48] <= 3'd0;
 		float_op_reg[48] <= 3'd0;
-		latency_reg[48] <= 1'd0;
+		latency_reg[48] <= 4'd0;
 
 		// RETI - 0x31
 		invalid_op_reg[49] <= 1'b1;
@@ -1284,7 +1284,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[49] <= 3'd0;
 		pred_op_reg[49] <= 3'd0;
 		float_op_reg[49] <= 3'd0;
-		latency_reg[49] <= 1'd0;
+		latency_reg[49] <= 4'd0;
 
 		// TLBRM - 0x32
 		invalid_op_reg[50] <= 1'b1;
@@ -1308,7 +1308,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[50] <= 3'd0;
 		pred_op_reg[50] <= 3'd0;
 		float_op_reg[50] <= 3'd0;
-		latency_reg[50] <= 1'd0;
+		latency_reg[50] <= 4'd0;
 
 		// ITOF - 0x33
 		invalid_op_reg[51] <= 1'b0;
@@ -1332,7 +1332,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[51] <= 3'b000;
 		pred_op_reg[51] <= 3'b000;
 		float_op_reg[51] <= 3'b001;
-		latency_reg[51] <= 2'b10;
+		latency_reg[51] <= 4'b1010;
 
 		// FTOI - 0x34
 		invalid_op_reg[52] <= 1'b0;
@@ -1356,7 +1356,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[52] <= 3'b000;
 		pred_op_reg[52] <= 3'b000;
 		float_op_reg[52] <= 3'b010;
-		latency_reg[52] <= 2'b10;
+		latency_reg[52] <= 4'b1010;
 
 		// FADD - 0x35
 		invalid_op_reg[53] <= 1'b0;
@@ -1380,7 +1380,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[53] <= 3'b000;
 		pred_op_reg[53] <= 3'b000;
 		float_op_reg[53] <= 3'b011;
-		latency_reg[53] <= 2'b10;
+		latency_reg[53] <= 4'b1010;
 
 		// FSUB - 0x36
 		invalid_op_reg[54] <= 1'b0;
@@ -1404,7 +1404,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[54] <= 3'b000;
 		pred_op_reg[54] <= 3'b000;
 		float_op_reg[54] <= 3'b100;
-		latency_reg[54] <= 2'b10;
+		latency_reg[54] <= 4'b1010;
 
 		// FMUL - 0x37
 		invalid_op_reg[55] <= 1'b0;
@@ -1428,7 +1428,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[55] <= 3'b000;
 		pred_op_reg[55] <= 3'b000;
 		float_op_reg[55] <= 3'b101;
-		latency_reg[55] <= 2'b10;
+		latency_reg[55] <= 4'b1010;
 
 		// FDIV - 0x38
 		invalid_op_reg[56] <= 1'b0;
@@ -1452,7 +1452,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[56] <= 3'b000;
 		pred_op_reg[56] <= 3'b000;
 		float_op_reg[56] <= 3'b110;
-		latency_reg[56] <= 2'b10;
+		latency_reg[56] <= 4'b1010;
 
 		// FNEG - 0x39
 		invalid_op_reg[57] <= 1'b0;
@@ -1476,7 +1476,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[57] <= 3'b000;
 		pred_op_reg[57] <= 3'b000;
 		float_op_reg[57] <= 3'b111;
-		latency_reg[57] <= 2'b10;
+		latency_reg[57] <= 4'b1010;
 
 		// UNUSED - 0x3a
 		invalid_op_reg[58] <= 1'b1;
@@ -1500,7 +1500,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[58] <= 3'd0;
 		pred_op_reg[58] <= 3'd0;
 		float_op_reg[58] <= 3'd0;
-		latency_reg[58] <= 1'd0;
+		latency_reg[58] <= 4'd0;
 
 		// UNUSED - 0x3b
 		invalid_op_reg[59] <= 1'b1;
@@ -1524,7 +1524,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[59] <= 3'd0;
 		pred_op_reg[59] <= 3'd0;
 		float_op_reg[59] <= 3'd0;
-		latency_reg[59] <= 1'd0;
+		latency_reg[59] <= 4'd0;
 
 		// UNUSED - 0x3c
 		invalid_op_reg[60] <= 1'b1;
@@ -1548,7 +1548,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[60] <= 3'd0;
 		pred_op_reg[60] <= 3'd0;
 		float_op_reg[60] <= 3'd0;
-		latency_reg[60] <= 1'd0;
+		latency_reg[60] <= 4'd0;
 
 		// UNUSED - 0x3d
 		invalid_op_reg[61] <= 1'b1;
@@ -1572,7 +1572,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[61] <= 3'd0;
 		pred_op_reg[61] <= 3'd0;
 		float_op_reg[61] <= 3'd0;
-		latency_reg[61] <= 1'd0;
+		latency_reg[61] <= 4'd0;
 
 		// UNUSED - 0x3e
 		invalid_op_reg[62] <= 1'b1;
@@ -1596,7 +1596,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[62] <= 3'd0;
 		pred_op_reg[62] <= 3'd0;
 		float_op_reg[62] <= 3'd0;
-		latency_reg[62] <= 1'd0;
+		latency_reg[62] <= 4'd0;
 
 		// UNUSED - 0x3f
 		invalid_op_reg[63] <= 1'b1;
@@ -1620,7 +1620,7 @@ always @(posedge clk) begin
 		complex_alu_op_reg[63] <= 3'd0;
 		pred_op_reg[63] <= 3'd0;
 		float_op_reg[63] <= 3'd0;
-		latency_reg[63] <= 1'd0;
+		latency_reg[63] <= 4'd0;
 	end
 end
 
