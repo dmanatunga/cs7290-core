@@ -27,6 +27,7 @@ module scoreboard(
     mem_busy,
     
     // Outputs
+	predicate_valid,
     resource_stall
 );
 
@@ -70,6 +71,7 @@ input                               mem_ins;
 input                               mem_busy;
 
 // Outputs
+output	predicate_valid;
 output  resource_stall;
 
 // Identify if the needed resource is busy
@@ -108,7 +110,8 @@ mux2to1 #(.DATA_WIDTH(1))
     .sel(mem_ins),
     .out(func_busy)
 );
-
+// Identify if predicate valid
+assign predicate_valid = ~pred_busy;
 // Identify if we should stall due to a needed unit being busy
 assign resource_stall = pred_busy |
                         reg_dest_busy |

@@ -1,52 +1,54 @@
 `include "globals.vh"
 module ID(
-  // Inputs
-  clk,
-  reset,
-  // From IF stage
-  ins,
-  next_pc,
-  is_nop,
-  // From EX stage
-  free_unit,
-  free_unit_id,
-  // From WB stage
-  rob_full,
-  entry_id,
-  commit_reg_addr,
-  commit_pred_addr,
-  wr_reg_en,
-  wr_reg_addr,
-  wr_reg_data,
-  wr_pred_en,
-  wr_pred_addr,
-  wr_pred_data,
+	// Inputs
+	clk,
+	reset,
+	// From IF stage
+	ins,
+	ins_is_nop,
+	next_pc,
+	// From EX stage
+	free_unit,
+	free_unit_id,
+	// From WB stage
+	rob_full,
+	entry_id,
+	commit_reg_addr,
+	commit_pred_addr,
+	wr_reg_en,
+	wr_reg_addr,
+	wr_reg_data,
+	wr_pred_en,
+	wr_pred_addr,
+	wr_pred_data,
   
-  // Outputs
-  // To IF stage
-  sel_br,
-  br_target,
-  // To EX stage
-  ins_nop,
-  ins_id,
-  ins_type,
-  predicate,
-  dest_addr,
-  reg_src1,
-  reg_src2,
-  pred_src1,
-  pred_src2,
-  imm_0reg,
-  imm_1reg,
-  imm_2reg,
-  mem_type,
+	// Outputs
+	id_stalls_if,
+	// To IF stage
+	sel_br,
+	br_target,
+	// To EX stage
+	ins_nop,
+	ins_id,
+	ins_type,
+	predicate,
+	dest_addr,
+	reg_src1,
+	reg_src2,
+	pred_src1,
+	pred_src2,
+	imm_0reg,
+	imm_1reg,
+	imm_2reg,
+	mem_type,
   
-  // To WB stage
-  add_entry,
-  entry_ins_type,
-  entry_dest_addr,
-  commit_reg_value,
-  commit_pred_value
+	// To WB stage
+	add_rob_entry,
+	entry_dest_addr,
+	entry_ins_type,
+	entry_ins_state,
+	commit_reg_data,
+	commit_pred_data
 );
 
 
@@ -66,21 +68,22 @@ localparam INS_PRED_SRCREG_LOW = `INS_WIDTH - 1- `PRED_ADDR_SIZE - `OPCODE_SIZE 
 
 
 // Inputs
-input                         	clk;
-input [`INS_WIDTH-1:0]        	ins;
-input                         	is_nop;
-input						  	free_unit;
-input [`FUNC_UNIT_OP_SIZE-1:0]	free_unit_id;
-input                         	rob_full;
-input [`ROB_ID_SIZE-1:0]      	entry_id;
-input [`REG_ADDR_SIZE-1:0]    	commit_reg_addr;
-input [`PRED_ADDR_SIZE-1:0]   	commit_pred_addr;
-input                         	wr_reg_en;
-input [`REG_ADDR_SIZE-1:0]    	wr_reg_addr;
-input [`INS_WIDTH-1:0]        	wr_reg_data;
-input                         	wr_pred_en;
-input [`PRED_ADDR_SIZE-1:0]   	wr_pred_addr;
-input                         	wr_pred_data;
+input								clk;
+input	[`DATA_WIDTH-1:0]			next_pc;
+input	[`INS_WIDTH-1:0]			ins;
+input								ins_is_nop;
+input								free_unit;
+input	[`FUNC_UNIT_OP_SIZE-1:0]	free_unit_id;
+input								rob_full;
+input	[`ROB_ID_SIZE-1:0]			entry_id;
+input	[`REG_ADDR_SIZE-1:0]		commit_reg_addr;
+input	[`PRED_ADDR_SIZE-1:0]		commit_pred_addr;
+input								wr_reg_en;
+input	[`REG_ADDR_SIZE-1:0]		wr_reg_addr;
+input	[`INS_WIDTH-1:0]			wr_reg_data;
+input								wr_pred_en;
+input	[`PRED_ADDR_SIZE-1:0]		wr_pred_addr;
+input								wr_pred_data;
 
 // Output instruction information
 // Output to IF stage
@@ -98,15 +101,16 @@ output  [`DATA_WIDTH-1:0]       imm_1reg;
 output  [`DATA_WIDTH-1:0]       imm_2reg;
 output  [`PRED_DATA_WIDTH-1:0]	pred_src1;
 output	[`PRED_DATA_WIDTH-1:0]	pred_src2;
-output							id_stall;
+output							id_stalls_if;
 // Output control signals
 
 // Output to WB stage
-output							add_entry;
+output							add_rob_entry;
 output	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
 output  [`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
-output  [`REG_DATA_WIDTH-1:0]	commit_reg_value;
-output	[`PRED_DATA_WIDTH-1:0]	commit_pred_value;
+output	[`INS_STATE_SIZE-1:0]	entry_ins_state;
+output  [`REG_DATA_WIDTH-1:0]	commit_reg_data;
+output	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
 
 
 // Instruction values
@@ -139,8 +143,11 @@ wire 							pred_src2_valid;
 wire 							dest_is_src;
 wire 							pred_src_reg;
 wire	[`INS_TYPE_SIZE-1:0]	ctrl_ins_type;
+wire							br_ins;
+wire	[`BR_TYPE_SIZE-1:0]		br_type;
 
-
+wire							predicate_valid;
+wire 							resource_stall;
 wire 							issue;
 
 // Decode instruction to its componenets
@@ -198,7 +205,7 @@ register_file_3r1w #(.ADDR_SIZE(`REG_ADDR_SIZE),
 	
     .data1(reg_src1),
     .data2(reg_src2),
-    .data3(commit_reg_value)
+    .data3(commit_reg_data)
 );
 
 // Predicate Register File
@@ -218,7 +225,7 @@ register_file_4r1w #(.ADDR_SIZE(`PRED_ADDR_SIZE),
     .data1(pred_val),
     .data2(pred_src1),
     .data3(pred_src2),
-    .data4(commit_pred_value),
+    .data4(commit_pred_data),
 );
 
 // Sign Extenders for immediate values
@@ -284,6 +291,7 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .mem_busy(mem_busy),
     .issue(issue),
 	
+	.predicate_valid(predicate_valid),
     .resource_stall(resource_stall)
 );
 
@@ -304,8 +312,8 @@ control_unit control(
 	.dest_is_src(dest_is_src),
 	.pred_src_reg(pred_src_reg),
 	.ins_type(ctrl_ins_type),
-	.br_ins,
-	.br_type,
+	.br_ins(br_ins),
+	.br_type(br_type),
 	// Mainly used by EX stage
 	
 	mem_ins,
@@ -325,20 +333,24 @@ mux4to1 #(.DATA_WIDTH(`DATA_WIDTH))
 	.A(pc_rel_br),
 	.B(pc_link_br),
 	.C(reg_br),
-	.D(reg_link_br)
+	.D(reg_link_br),
 	.sel(br_type),
 	.out(br_target)
 );
 
-// If instruction was nop, then indicate so to next instruction
-assign ins_nop = is_nop;
 // Issue if we can add to ROB and send to EX stage
-assign id_stall = rob_full | resource_stall;
-assign issue = predicate & ~id_stall;
-assign ins_type = {{`INS_TYPE_SIZE}{predicate}} & ins_type;
+assign id_stalls_if = rob_full | (resource_stall & predicate) | ~predicate_valid;
+// Issue instruction if we arne't stalling ID 
+assign issue = predicate & ~id_stalls_if;
+// If instruction was nop, then indicate so to next instruction
+assign ins_nop = ins_is_nop | id_stalls_if | ~issue;
+
 // WB stage values
-assign add_entry = issue;
-assign entry_ins_type = ins_type;
+assign add_rob_entry = ~id_stalls_if;
 assign entry_dest_addr = dest_addr;
+assign entry_ins_type = {{`INS_TYPE_SIZE}{predicate}} & ins_type;
+assign entry_ins_state = ~predicate;
+// Selecting branch value
 assign sel_br = br_ins & issue;	
+
 endmodule

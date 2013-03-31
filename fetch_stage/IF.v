@@ -1,90 +1,113 @@
+`include "globals.vh"
 module IF(
     // Inputs
     clk,
+	reset,
+	// Inputs
+	mem_stall,
+	mem_data,
+	mem_id,
+	mem_valid,
+	// From ID stage
     sel_br,
-    br_targ,
-    pc_stall,
+    br_target,
+    if_stall,
     // Outputs
+	// To memory
+	fetch_addr,
+	fetch_id, 
+	fetch_valid,
+	// To EX stage
     next_pc,
-    ins
+    ins,
+	ins_is_nop
 );
 
-parameter MEM_SIZE = 32;
-parameter MEM_BITS = 5;
-parameter WORD_BITS = 2;
-parameter WORD_SIZE = 32;
-
 // Inputs
-input            clk;
-input    [31:0]  br_targ;
-input            sel_br;
-input            pc_stall;
+input            				clk;
+input							reset;
+input							mem_stall;
+input	[`DATA_WIDTH-1:0]		mem_data;
+input	[`FETCH_ID_SIZE-1:0]	mem_id;
+input							mem_valid;
+input							sel_br;
+input	[`DATA_WIDTH-1:0]		br_target;
+input							if_stall;
  
 // Outputs
-output      [31:0]           next_pc;
-output reg  [WORD_SIZE-1:0]  ins;
+// To memory
+output 		[`DATA_WIDTH-1:0]		fetch_addr;
+output reg	[`FETCH_ID_SIZE-1:0]	fetch_id;
+output								fetch_valid;
+// To ex stage
+output	[`DATA_WIDTH-1:0]		next_pc;
+output	[`INS_SIZE-1:0]			ins;
+output							ins_is_nop;
 
-reg      [31:0]  pc;
-wire     [31:0]  new_pc;
-wire     [31:0]  mem_addr;  
+reg	[`DATA_WIDTH-1:0]	pc;
+reg	[`DATA_WIDTH-1:0]	mem_addr; 
+reg						addr_valid;
+reg	[`DATA_WIDTH-1:0]	ins_queue;
+reg						ins_queue_valid;
+reg						fetch_ready;
+wire	[`DATA_WIDTH-1:0]	new_pc;
 
-reg      [31:0]  MEMORY[MEM_SIZE-1:0];
 
-initial begin
-  pc <= 32'd0;
-  /**
-  MEMORY[0] <= 32'h05110003;
-  MEMORY[1] <= 32'h05190005;
-  MEMORY[2] <= 32'h07400024;
-  MEMORY[3] <= 0;
-  MEMORY[4] <= 0;
-  MEMORY[5] <= 0;
-  MEMORY[6] <= 0;
-  MEMORY[7] <= 0;
-  MEMORY[8] <= 0;
-  MEMORY[9] <= 32'h02a26000;
-  MEMORY[10] <= 32'h02eb4000;
-  MEMORY[11] <= 32'h0b800000;
-  MEMORY[12] <= 0;
-  MEMORY[13] <= 0;
-  MEMORY[14] <= 0;
-  MEMORY[15] <= 0;
-  MEMORY[16] <= 0;
-  MEMORY[17] <= 0;
-  MEMORY[18] <= 32'h02e26000;
-  MEMORY[19] <= 32'h02ab4000;
-  MEMORY[20] <= 0;
-  MEMORY[21] <= 0;
-  MEMORY[22] <= 0;
-  MEMORY[23] <= 0;
-  **/
-  
-  MEMORY[0] <= 32'h05110003;
-  MEMORY[1] <= 32'h05190005;
-  MEMORY[2] <= 0;
-  MEMORY[3] <= 0;
-  MEMORY[4] <= 0;
-  MEMORY[5] <= 0;
-  MEMORY[6] <= 0;
-  MEMORY[7] <= 0;
-  MEMORY[8] <= 32'h02a26000;
-  MEMORY[9] <= 32'h02eb4000;
-end
-
-assign mem_addr = pc;
+assign fetch_addr = pc;
 assign next_pc = pc + 4;
-mux2to1 m1(.a(next_pc), .b(br_targ), .sel(sel_br), .out(new_pc));
+assign ins = ins_queue;
+assign ins_is_nop = ~ins_queue_valid;
+
+assign next_pc = pc + 4;
+assign fetch_valid = fetch_ready & ~mem_stall;
+
+mux2to1 #(.DATA_WIDTH(`DATA_WIDTH))
+	pc_mux(
+		.A(next_pc),
+		.b(br_target),
+		.sel(sel_br),
+		.out(new_pc)
+);
+
+
+always @(data_valid) begin
+	if (mem_valid && (fetch_id == mem_id)) begin
+		ins_queue <= mem_data;
+		ins_queue_valid <= 1'b1;
+	end
+end
 
 always @(posedge clk) begin
-  if (~pc_stall)
-    begin
-      pc = new_pc;
-    end
+	if (reset)	begin
+		pc <= 32'd0;
+		fetch_id <= 0;
+		fetch_ready <= 1;
+		
+		ins_queue <= 0;
+		ins_queue_valid <= 0;
+	end else begin
+		if (!if_stall && ins_queue_valid) begin
+			ins_queue_valid <= 1'b0;
+			if (sel_br) begin
+				pc <= target_pc;
+			end else begin
+				pc <= next_pc;
+			end
+			fetch_id <= fetch_id + 1;
+			fetch_ready <= 1'b1;
+		end else begin
+			if (sel_br) begin
+				pc <= br_target;
+				ins_queue_valid <= 1'b0;
+				fetch_id <= fetch_id + 1;
+				fetch_ready <= 1'b1;
+			end else begin
+				if (fetch_valid) begin
+					fetch_ready <= 0;
+				end
+			end
+		end
+	end
 end
-
-always @(pc) begin
-  ins <= MEMORY[pc[MEM_BITS-1+WORD_BITS:WORD_BITS]];
-end
-
 endmodule
   

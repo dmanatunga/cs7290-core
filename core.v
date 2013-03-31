@@ -1,232 +1,247 @@
+`include "globals.vh"
 module core(
-    clk
+	// Inputs
+    clk,
+	reset,
+	// From icache controller
+	icache_data_in,
+	icache_id_in,
+	icache_ready_in,
+	icache_stall_in,
+	// From dcache controller
+	dcache_data_in,
+	dcache_id_in,
+	dcache_ready_in,
+	dcache_stall_in,
+	// Ouputs
+	// To icache controller
+	icache_addr_out,
+	icache_data_out,
+	icache_rw_out,
+	icache_id_out,
+	icache_valid_out,
+	// To dcache controller
+	dcache_addr_out,
+	dcache_data_out,
+	dcache_rw_out,
+	dcache_id_out,
+	dcache_valid_out
 );
 // Inputs
 input clk;
+input reset;
+// From icache controller
+input	[`DATA_WIDTH-1:0]	icache_data_in;
+input	[3:0]				icache_id_in;
+input						icache_ready_in;
+input						icache_stall_in;
+// From dcache controller
+input	[`DATA_WIDTH-1:0]	dcache_data_in;
+input	[3:0]				dcache_id_in;
+input						dcache_ready_in;
+input						dcache_stall_in;
+// Outputs
+// To icache controller
+output	[`DATA_WIDTH-1:0]	icache_addr_out;
+output	[`DATA_WIDTH-1:0]	icache_data_out;
+output						icache_rw_out;
+output	[3:0]				icache_id_out;
+output						icache_valid_out;
+// To dcache controller
+output	[`DATA_WIDTH-1:0]	dcache_addr_out;
+output	[`DATA_WIDTH-1:0]	dcache_data_out;
+output						dcache_rw_out;
+output	[3:0]				dcache_id_out;
+output						dcache_valid_out;
 
-// Instruction Fetch Wires
-wire    [31:0]    if_next_pc;
-wire    [31:0]    if_ins;
+// From IF stage to IF latch
+wire	[`DATA_WIDTH-1:0]	if_next_pc;
+wire    [`INS_WIDTH-1:0]    if_ins;
+wire						if_nop;
 
-// Instruction Decode Wires
-wire    [31:0]    id_next_pc;
-wire    [31:0]    id_ins;
-wire    [2:0]     id_dest_reg;
-wire    [31:0]    id_r1_data;
-wire    [31:0]    id_r2_data;
-wire    [31:0]    id_r3_data;
-wire    [31:0]    id_imm22;
-wire    [31:0]    id_imm16;
-wire              id_pred_val;
+// From stall unit to IF latch 
+wire	if_stall_latch;
+wire	if_clr_latch;
 
-wire              id_muxA_sel;
-wire    [1:0]     id_muxB_sel;
-wire    [1:0]     id_alu_op;
-wire              id_br_ins;
-wire              id_br_type;
-wire              id_mem_ins;
-wire              id_mem_type;
-wire              id_sel_data;
-wire              id_wr_reg;
+// From IF latch to ID stage
+wire    [`DATA_WIDTH-1:0]	id_next_pc;
+wire    [`INS_WIDTH-1:0]	id_ins;
+wire						id_ins_is_nop;
 
-// Execute wires
-wire    [31:0]    ex_next_pc;
-wire    [2:0]     ex_dest_reg;
-wire    [31:0]    ex_r1_data;
-wire    [31:0]    ex_r2_data;
-wire    [31:0]    ex_r3_data;
-wire    [31:0]    ex_imm22;
-wire    [31:0]    ex_imm16;
-wire              ex_pred_val;
-wire    [31:0]    ex_alu_out;
+// From ID stage to IF stage
+wire							if_sel_br;
+wire    [`DATA_WIDTH-1:0]		if_br_target;	
+wire							id_stalls_if;
 
-wire              ex_muxA_sel;
-wire    [1:0]     ex_muxB_sel;
-wire    [1:0]     ex_alu_op;
-wire              ex_br_ins;
-wire              ex_br_type;
-wire              ex_mem_ins;
-wire              ex_mem_type;
-wire              ex_sel_data;
-wire              ex_wr_reg;
+// From ID stage to WB stage
+wire							add_rob_entry;
+wire	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
+wire	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
+wire	[`INS_STATE_SIZE-1:0]	entry_ins_state;
+wire	[`REG_DATA_WIDTH-1:0]	commit_reg_data;
+wire	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
 
-// Memory wires
-wire    [31:0]    mem_alu_out;
-wire    [31:0]    mem_r1_data;
-wire    [2:0]     mem_dest_reg;
-wire              mem_pred_val;
-wire              mem_br_ins;
-wire              mem_br_type;
-wire              mem_mem_ins;
-wire              mem_mem_type;
-wire              mem_sel_data;
-wire              mem_wr_reg;
+// From EX stage to WB latch
+wire	[`ROB_ID_SIZE-1:0]		ex_ins_rob_id;
+wire	[`DEST_ADDR_SIZE-1:0]	ex_dest_addr;
+wire	[`INS_TYPE_SIZE-1:0]	ex_ins_type;
+wire    [`DATA_WIDTH-1:0]		ex_ins_data;
+wire    [`DATA_WIDTH-1:0]		ex_ins_is_nop;
+    
+// From WB stage to ID stage
+wire	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;
+wire	[`PRED_ADDR_SIZE-1:0]	commit_pred_addr;
+wire							rob_full;
+wire	[`ROB_ID_SIZE-1:0]		entry_id;
+wire							wr_reg_en;
+wire	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
+wire	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
+wire							wr_pred_en;
+wire	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
+wire	[`PRED_DATA_WIDTH-1:0]	wr_pred_en;
 
-wire    [31:0]    mem_mem_data;
-wire    [31:0]    mem_br_targ;
 
-// Writeback wires
-wire    [31:0]    wb_alu_out;
-wire    [31:0]    wb_mem_data;
-wire    [2:0]     wb_dest_reg;
-wire              wb_pred_val;
-wire              wb_mem_ins;
-wire              wb_wr_reg;
-wire              wb_wr_en;
-wire    [2:0]     wb_wr_addr;
-wire    [31:0]    wb_wr_data;
 
-     
+pipeline_control_unit pipeline(
+	.if_nop(if_nop),
+	.id_stalls_if(id_stalls_if),
+	.sel_br(if_sel_br),
+	.id(id_nop),
+	
+	.if_stall_latch(if_stall_latch),
+	.if_clr_latch(if_clr_latch),
+); 
+
+assign icache_rw_out = 1'b0; // i-cache only ever reads
 // Instruction Fetch Stage
-IF if_stage(.clk(clk), 
-            .sel_br(mem_br_ins), 
-            .br_targ(mem_br_targ), 
-            .next_pc(if_next_pc), 
-            .ins(if_ins)
+IF if_stage(
+	.clk(clk), 
+	.reset(reset),
+	// From outside core memory
+	.mem_stall(icache_stall_in),
+	.mem_data(icache_data_in),
+	.mem_id(icache_data_id),
+	.mem_valid(icache_ready_in),
+	// From ID stage
+	.sel_br(if_sel_br), 
+    .br_target(if_br_target),
+	// From stall unit
+	.if_stall(if_stall_latch),
+	// To outside core memory
+	.fetch_addr(icache_addr_out),
+	.fetch_id(icache_id_out),
+	.fetch_valid(icache_valid_out),
+	// To latch
+    .next_pc(if_next_pc), 
+    .ins(if_ins),
+	.ins_is_nop(if_nop)
 );
 
 // Latch between Instruction Fetch and Instruction Decode
-IF_ID_latch if_id_latch(.clk(clk), 
-                        .in_next_pc(if_next_pc), 
-                        .in_ins(if_ins), 
-                        .out_next_pc(id_next_pc), 
-                        .out_ins(id_ins)
+IF_ID_latch if_id_latch(
+	.clk(clk),
+	.reset(reset),
+	.stall(if_stall_latch),
+	.clr_latch(if_clr_latch),
+    .in_next_pc(if_next_pc), 
+    .in_ins(if_ins), 
+    .out_next_pc(id_next_pc), 
+    .out_ins(id_ins),
+	.out_is_nop(id_is_nop)
 );
 
 // Instruction Decode Stage
-ID id(.clk(clk),
-      .ins(id_ins),
-      .wr_en(wb_wr_en),
-      .wr_data(wb_wr_data),
-      .wr_addr(wb_wr_addr),
-      .dest_reg(id_dest_reg),
-      .r1_data(id_r1_data),
-      .r2_data(id_r2_data),
-      .r3_data(id_r3_data),
-      .imm16(id_imm16),
-      .imm22(id_imm22),
-      .pred_val(id_pred_val),
-      .muxA_sel(id_muxA_sel),
-      .muxB_sel(id_muxB_sel),
-      .alu_op(id_alu_op),
-      .br_ins(id_br_ins),
-      .br_type(id_br_type),
-      .mem_ins(id_mem_ins),
-      .mem_type(id_mem_type),
-      .wr_reg(id_wr_reg) 
+ID id(
+	.clk(clk),
+    .reset(reset),
+	
+	// From IF stage latch
+	.ins(id_ins),
+	.ins_is_nop(id_is_nop),
+	.next_pc(id_next_pc),
+
+	// From EX stage
+	.free_unit(ex_free_unit),
+	.free_unit_id(ex_free_unit_id),
+	
+	// From WB stage
+	.rob_full(rob_full),
+	.entry_id(entry_id),
+	.commit_reg_addr(commit_reg_addr),
+	.commit_pred_addr(commit_pred_addr),
+	.wr_reg_en(wr_reg_en),
+	.wr_reg_addr(wr_reg_addr),
+	.wr_reg_data(wr_reg_data),
+	.wr_pred_en(wr_pred_en),
+	.wr_pred_addr(wr_pred_addr),
+	.wr_pred_data(wr_pred_data),
+  
+	// Outputs
+	.id_stalls_if(id_stalls_if),
+	// To IF stage
+	.sel_br(if_sel_br),
+	.br_target(if_br_target),
+	// To EX stage
+	.ins_nop,
+	.ins_id,
+	.ins_type,
+	.predicate,
+	.dest_addr,
+	.reg_src1,
+	.reg_src2,
+	.pred_src1,
+	.pred_src2,
+	.imm_0reg,
+	.imm_1reg,
+	.imm_2reg,
+	.mem_type,
+  
+	// To WB stage
+	.add_rob_entry(add_rob_entry),
+	.entry_dest_addr(entry_dest_addr),
+	.entry_ins_type(entry_ins_type),
+	.entry_ins_state(entry_ins_state),
+	.commit_reg_data(commit_reg_data),
+	.commit_pred_data(commit_pred_data)	
 );
 
 // Latch between Instruction Decode and Execute
-ID_EX_latch id_ex_latch(.clk(clk),
-                        .in_next_pc(id_next_pc),
-                        .in_dest_reg(id_dest_reg),
-                        .in_r1_data(id_r1_data),
-                        .in_r2_data(id_r2_data),
-                        .in_r3_data(id_r3_data),
-                        .in_imm22(id_imm22),
-                        .in_imm16(id_imm16),
-                        .in_pred_val(id_pred_val),
-                        .in_muxA_sel(id_muxA_sel),
-                        .in_muxB_sel(id_muxB_sel),
-                        .in_alu_op(id_alu_op),
-                        .in_br_ins(id_br_ins),
-                        .in_br_type(id_br_type),
-                        .in_mem_ins(id_mem_ins),
-                        .in_mem_type(id_mem_type),
-                        .in_wr_reg(id_wr_reg),
-    
-                        .out_next_pc(ex_next_pc),
-                        .out_dest_reg(ex_dest_reg),
-                        .out_r1_data(ex_r1_data),
-                        .out_r2_data(ex_r2_data),
-                        .out_r3_data(ex_r3_data),
-                        .out_imm22(ex_imm22),
-                        .out_imm16(ex_imm16),
-                        .out_pred_val(ex_pred_val),
-                        .out_muxA_sel(ex_muxA_sel),
-                        .out_muxB_sel(ex_muxB_sel),
-                        .out_alu_op(ex_alu_op),
-                        .out_br_ins(ex_br_ins),
-                        .out_br_type(ex_br_type),
-                        .out_mem_ins(ex_mem_ins),
-                        .out_mem_type(ex_mem_type),
-                        .out_wr_reg(ex_wr_reg)
+ID_EX_latch id_ex_latch(
+	.clk(clk),
+	.reset(reset),
+	
 );
 
-// Execute stage
-EX  ex(.clk(clk), 
-       .next_pc(ex_next_pc), 
-       .r2_data(ex_r2_data), 
-       .r3_data(ex_r3_data),
-       .imm16(ex_imm16),
-       .imm22(ex_imm22),
-       .muxA_sel(ex_muxA_sel),
-       .muxB_sel(ex_muxB_sel),
-       .alu_op(ex_alu_op),
-       .alu_out(ex_alu_out)
-);
-
-// Latch between Execute and Memory
-EX_MEM_latch ex_mem_latch(.clk(clk),
-                          .in_alu_out(ex_alu_out),
-                          .in_r1_data(ex_r1_data),
-                          .in_dest_reg(ex_dest_reg),
-                          .in_pred_val(ex_pred_val),
-                          .in_br_ins(ex_br_ins),
-                          .in_br_type(ex_br_type),
-                          .in_mem_ins(ex_mem_ins),
-                          .in_mem_type(ex_mem_type),
-                          .in_wr_reg(ex_wr_reg),
-                          .out_alu_out(mem_alu_out),
-                          .out_r1_data(mem_r1_data),
-                          .out_dest_reg(mem_dest_reg),
-                          .out_pred_val(mem_pred_val),
-                          .out_br_ins(mem_br_ins),
-                          .out_br_type(mem_br_type),
-                          .out_mem_ins(mem_mem_ins),
-                          .out_mem_type(mem_mem_type),
-                          .out_wr_reg(mem_wr_reg)
-);
-
-// Memory stage
-MEM mem(.clk(clk),
-    .alu_out(mem_alu_out),
-    .r1_data(mem_r1_data),
-    .pred_val(mem_pred_val),
-    .br_type(mem_br_type),
-    .mem_ins(mem_mem_ins),
-    .mem_type(mem_mem_type),
-    .br_targ(mem_br_targ),
-    .mem_data(mem_mem_data)
-);
-
-// Latch between Memory and Writeback
-MEM_WB_latch mem_wb_latch(.clk(clk),
-                          .in_alu_out(mem_alu_out),
-                          .in_mem_data(mem_mem_data),
-                          .in_dest_reg(mem_dest_reg),
-                          .in_pred_val(mem_pred_val),
-                          .in_mem_ins(mem_mem_ins),
-                          .in_wr_reg(mem_wr_reg),
-                          .out_alu_out(wb_alu_out),
-                          .out_mem_data(wb_mem_data),
-                          .out_dest_reg(wb_dest_reg),
-                          .out_pred_val(wb_pred_val),
-                          .out_mem_ins(wb_mem_ins),
-                          .out_wr_reg(wb_wr_reg)
-);
 
 // Writeback stage
-WB  wb(.clk(clk),
-       .alu_out(wb_alu_out),
-       .mem_data(wb_mem_data),
-       .dest_reg(wb_dest_reg),
-       .pred_val(wb_pred_val),
-       .mem_ins(wb_mem_ins),
-       .wr_reg(wb_wr_reg),
-       .wr_en(wb_wr_en),
-       .wr_addr(wb_wr_addr),
-       .wr_data(wb_wr_data)
+WB  wb(
+	.clk(clk),
+	.reset(reset),
+	// From ID stage
+	.add_rob_entry(add_rob_entry),
+    .entry_dest_addr(entry_dest_addr),
+    .entry_ins_type(entry_ins_type),
+	.entry_ins_state(entry_ins_state),
+    .commit_reg_data(commit_reg_data),
+    .commit_pred_data(commit_pred_data),
+    // From EX-WB latch
+    .ins_rob_id(ex_ins_rob_id),
+    .dest_addr(ex_dest_addr), 
+    .ins_type(ex_ins_type),
+    .ins_data(ex_ins_data),
+	.ins_is_nop(ex_ins_is_nop),    
+    
+    // To ID stage
+    .commit_reg_addr(commit_reg_addr),
+    .commit_pred_addr(commit_pred_addr),
+	.rob_full(rob_full), 
+	.add_entry_id(entry_id),
+    .wr_reg_en(wr_reg_en),
+    .wr_reg_addr(wr_reg_addr),
+    .wr_reg_data(wr_reg_data),
+    .wr_pred_en(wr_pred_en),
+    .wr_pred_addr(wr_pred_addr),
+    .wr_pred_data(wr_pred_en),
 );
-endmodule
 
+endmodule

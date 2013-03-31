@@ -1,5 +1,4 @@
 `include "globals.vh"
-
 module WB(
     // Inputs
     clk,
@@ -8,20 +7,22 @@ module WB(
     add_rob_entry,
     entry_dest_addr,
     entry_ins_type,
+	entry_ins_state,
     commit_reg_data,
     commit_pred_data,
     // From EX stage
     ins_rob_id,
     dest_addr, 
     ins_type,
+    ins_data,
     is_nop,
-    ins_data,    
     
     // Outputs
     // To ID stage
     commit_reg_addr,
     commit_pred_addr,
-    rob_full, 
+    rob_full,	
+	add_entry_id;
     wr_reg_en,
     wr_reg_addr,
     wr_reg_data,
@@ -30,50 +31,52 @@ module WB(
     wr_pred_data
 );
 
-
 // Inputs
-input                          clk;
-input                          reset;
+input							clk;
+input							reset;
 // Inputs from ID stage
-input                          add_rob_entry;
-input   [`DEST_ADDR_SIZE-1:0]  entry_dest_addr;
-input   [`INS_TYPE_SIZE-1:0]   entry_ins_type;
-input   [`REG_DATA_SIZE-1:0]   commit_reg_data;
-input   [`PRED_DATA_SIZE-1:0]  commit_pred_data;
+input							add_rob_entry;
+input	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
+input	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
+input	[`INS_STATE_SIZE-1:0]	entry_ins_state;
+input	[`REG_DATA_SIZE-1:0]	commit_reg_data;
+input	[`PRED_DATA_SIZE-1:0]	commit_pred_data;
 // Inputs from EX stage
-input   [`ROB_ADDR_SIZE-1:0]   ins_rob_id;
-input   [`DEST_ADDR_SIZE-1:0]  dest_addr;
-input   [`INS_TYPE_SIZE-1:0]   ins_type;
-input                          is_nop;
-input   [`DATA_WIDTH-1:0]      ins_data;
+input	[`ROB_ADDR_SIZE-1:0]	ins_rob_id;
+input	[`DEST_ADDR_SIZE-1:0]	dest_addr;
+input	[`INS_TYPE_SIZE-1:0]	ins_type;
+input							is_nop;
+input	[`DATA_WIDTH-1:0]		ins_data;
 
 
 // Outputs
-output    [`REG_ADDR_SIZE-1:0]  commit_reg_addr;
-output    [`PRED_ADDR_SIZE-1:0] commit_pred_addr;
-output                          rob_full;
-output                          wr_reg_en;
-output    [`REG_ADDR_SIZE-1:0]  wr_reg_addr;
-output    [`REG_DATA_SIZE-1:0]  wr_reg_data;
-output                          wr_pred_en;
-output    [`PRED_ADDR_SIZE-1:0] wr_pred_addr;
-output    [`PRED_DATA_SIZE-1:0] wr_pred_data;
+output	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;
+output	[`PRED_ADDR_SIZE-1:0]	commit_pred_addr;
+output							rob_full;
+output							add_entry_id;
+output							wr_reg_en;
+output	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
+output	[`REG_DATA_SIZE-1:0]	wr_reg_data;
+output							wr_pred_en;
+output	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
+output	[`PRED_DATA_SIZE-1:0]	wr_pred_data;
 
-wire commit;
-wire ins_is_head;
-wire head_id;
-wire head_finished;
+wire	commit;
+wire	ins_is_head;
+wire	head_id;
+wire	head_finished;
+wire	is_rob_full;
 
-wire                            set_ins_finished;
-wire    [`DEST_ADDR_SIZE-1:0]   commit_dest_addr;
-wire    [`INS_TYPE_SIZE-1:0]    commit_ins_type;
-wire                            commit_st;
-wire                            commit_reg;
-wire                            commit_pred;
-wire    [`REG_ADDR_SIZE-1:0]    arch_reg_addr;
-wire    [`REG_DATA_SIZE-1:0]    arch_reg_data;
-wire    [`PRED_ADDR_SIZE-1:0]   arch_pred_addr;
-wire    [`PRED_DATA_SIZE-1:0]   arch_pred_data;
+wire							set_ins_finished;
+wire	[`DEST_ADDR_SIZE-1:0]	commit_dest_addr;
+wire	[`INS_TYPE_SIZE-1:0]	commit_ins_type;
+wire							commit_st;
+wire							commit_reg;
+wire							commit_pred;
+wire	[`REG_ADDR_SIZE-1:0]	arch_reg_addr;
+wire	[`REG_DATA_SIZE-1:0]	arch_reg_data;
+wire	[`PRED_ADDR_SIZE-1:0]	arch_pred_addr;
+wire	[`PRED_DATA_SIZE-1:0]	arch_pred_data;
 
 // If instruction is head, then write data to physical and architectural file
 assign ins_is_head = ~is_nop & (ins_rob_id == head_id);
@@ -90,8 +93,11 @@ assign commit_pred_addr = commit_pred_addr[`PRED_ADDR_SIZE-1:0];
 assign wr_reg_en = ins_type[1] & ~commit_ins_type[0];
 assign wr_pred_en = ins_type[1] & commit_ins_type[0];
 
+// Indicate if rob_full based on full signal, or if we are commiting
+assign is_rob_full = ~commit & is_rob_full;
+
 // Decoder to generate commit signals
-decoder2 commit_dec(
+decoder2 commit_decoder(
   .in(commit_ins_type),
   .enable(commit),
   .A(),
@@ -105,8 +111,8 @@ assign wr_reg_data = ins_data[`REG_DATA_SIZE-1:0];
 assign wr_pred_data = ins_data[`PRED_DATA_SIZE-1:0];
 
 // Arch. Register File
-register_file_0r1w #(.DATA_WIDTH(`REG_DATA_SIZE), 
-                     .REG_ADDR_SIZE(`REG_ADDR_SIZE)) 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`REG_DATA_SIZE), 
+								.REG_ADDR_SIZE(`REG_ADDR_SIZE)) 
   arch_register_file(
     .clk(clk),
     .reset(reset),
@@ -116,8 +122,8 @@ register_file_0r1w #(.DATA_WIDTH(`REG_DATA_SIZE),
 );
 
 // Arch. Predicate Register File
-register_file_0r1w #(.DATA_WIDTH(`PRED_DATA_SIZE), 
-                     .ADDR_SIZE(`PRED_ADDR_SIZE)) 
+register_file_0r1w_asyncRposW #(.DATA_WIDTH(`PRED_DATA_SIZE), 
+								.ADDR_SIZE(`PRED_ADDR_SIZE)) 
   arch_predicate_file(
     .clk(clk),
     .reset(reset),
@@ -126,7 +132,7 @@ register_file_0r1w #(.DATA_WIDTH(`PRED_DATA_SIZE),
     .wr_data(commit_pred_data)
 );  
 
-rob_unit #(.ROB_ADDR_SIZE(`ROB_ADDR_SIZE), 
+rob_unit #(.ROB_ADDR_SIZE(`ROB_ID_SIZE), 
            .DEST_ADDR_SIZE(`DEST_ADDR_SIZE), 
            .INS_TYPE_SIZE(`INS_TYPE_SIZE)) 
   rob(
@@ -135,15 +141,17 @@ rob_unit #(.ROB_ADDR_SIZE(`ROB_ADDR_SIZE),
     .add_entry(add_rob_entry),
     .entry_dest_addr(entry_dest_addr),
     .entry_ins_type(entry_ins_type),
+	.entry_ins_state(entry_ins_state),
     .ins_rob_id(ins_rob_id),
     .set_ins_finished(set_ins_finished),
     .commit_head(commit),
     
     .head_id(head_id),
+	.tail_id(add_entry_id),
     .head_finished(head_finished),
     .head_dest_addr(commit_dest_addr),
     .head_ins_type(commit_ins_type),
-    .is_full(rob_full)
+    .is_full(is_rob_full)
 );
 
 endmodule
