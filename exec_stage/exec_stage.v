@@ -118,7 +118,7 @@ parameter DEST_REG_SIZE = 3;
    assign func_unit   = (ins_nop == 1) ? DUMMY_ALU : func_select;
 
 mux2to1 #(.DATA_WIDTH(32)) 
-  regSrc1Mux(
+  alu_MuxA(
     .a		(next_pc), 
     .b		(R2_DataSrcA),
     .sel	(muxa),
@@ -126,17 +126,17 @@ mux2to1 #(.DATA_WIDTH(32))
 );
 
 mux4to1 #(.DATA_WIDTH(32))
-  br_mux(
-	.A	(32'd0),
-	.B	(imm3),
-	.C	(imm2),
-	.D	(R3_DataSrcB),
+  alu_MuxB(
+	.a	(32'd0),
+	.b	(imm3),
+	.c	(imm2),
+	.d	(R3_DataSrcB),
 	.sel	(muxb),
 	.out	(alu_inB)
 );
 
 mux2to1 #(.DATA_WIDTH(32)) 
-  regSrc1Mux(
+  pred_MuxA(
     .a		(pred_src1), 
     .b		(R2_DataSrcA),
     .sel	(muxa),
