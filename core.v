@@ -82,11 +82,11 @@ wire	[`REG_DATA_WIDTH-1:0]	commit_reg_data;
 wire	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
 
 // From EX stage to WB latch
-wire	[`ROB_ID_SIZE-1:0]		ex_ins_rob_id;
-wire	[`DEST_ADDR_SIZE-1:0]	ex_dest_addr;
-wire	[`INS_TYPE_SIZE-1:0]	ex_ins_type;
-wire    [`DATA_WIDTH-1:0]		ex_ins_data;
-wire    [`DATA_WIDTH-1:0]		ex_ins_is_nop;
+wire	[`ROB_ID_SIZE-1:0]		wb_ins_rob_id;
+wire	[`DEST_ADDR_SIZE-1:0]		wb_dest_addr;
+wire	[`INS_TYPE_SIZE-1:0]		wb_ins_type;
+wire    [`DATA_WIDTH-1:0]		wb_ins_data;
+wire    [`DATA_WIDTH-1:0]		wb_ins_is_nop;
     
 // From WB stage to ID stage
 wire	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;
@@ -207,10 +207,62 @@ ID id(
 
 // Latch between Instruction Decode and Execute
 ID_EX_latch id_ex_latch(
-	.clk(clk),
-	.reset(reset),
+	.clk			(clk),
+	.reset			(reset),
+	.out_dest_addr		(ex_dest_addr),
+	.out_reg_src1		(ex_reg_src1),
+	.out_reg_src2		(ex_reg_src2),
+	.out_imm_0reg		(ex_imm_0reg),
+	.out_imm_1reg		(ex_imm_1reg),
+	.out_imm_2reg		(ex_imm_2reg),
+	.out_pred_src1		(ex_pred_src1),
+	.out_pred_src2		(ex_pred_src2),
+	.out_latency_counter	(ex_latency_counter),
+	.out_ins_id		(ex_ins_id),
+	.out_func_select	(ex_func_select),
+	.out_mem_type		(ex_mem_type),
+	.out_is_mem		(ex_is_mem),
+	.out_simple_alu_op	(ex_simple_alu_op),
+	.out_complex_alu_op	(ex_complex_alu_op)
+	.out_pred_op		(ex_pred_op),
+	.out_float_op		(ex_float_op),
+	.out_ins_type		(ex_ins_type),
+	.out_ins_nop		(ex_ins_nop),
 	
 );
+
+exec_stage ex(
+   //inputs
+   .clk			(clk),
+   .reset		(reset),
+   .dest_reg		(ex_dest_addr),
+   .ctrl_sigs		(),
+   .R2_DataSrcA		(ex_reg_src1),
+   .R3_DataSrcB		(ex_reg_src2),
+   .imm1		(ex_imm_0reg),
+   .imm2		(ex_imm_1reg),
+   .imm3		(ex_imm_2reg),
+   .pred_src1		(ex_pred_src1),
+   .pred_src2		(ex_pred_src2),
+   .latency_counter	(ex_latency_counter),
+   .rob_entry		(ex_ins_id),
+   .func_select		(ex_func_select),
+   .mem_type		(ex_mem_type),
+   .is_mem		(ex_is_mem),
+   .simple_alu_op	(ex_simple_alu_op),
+   .complex_alu_op	(ex_complex_alu_op),
+   .pred_op		(ex_pred_op),
+   .float_op		(ex_float_op),
+   .ins_type		(ex_ins_type),
+   .ins_nop		(ex_ins_nop),
+   .//outputs
+   .alu_out 		(wb_ins_data),
+   .ctrl_sigs_pass	(wb_ins_type),
+   .alu_free_out	(ex_free_units),
+   .rob_entry_out	(wb_ins_rob_id),
+   .ins_nop_out		(wb_ins_is_nop),
+   .dest_reg_pass	(wb_dest_addr)
+   );
 
 
 // Writeback stage
@@ -225,11 +277,11 @@ WB  wb(
     .commit_reg_data(commit_reg_data),
     .commit_pred_data(commit_pred_data),
     // From EX-WB latch
-    .ins_rob_id(ex_ins_rob_id),
-    .dest_addr(ex_dest_addr), 
-    .ins_type(ex_ins_type),
-    .ins_data(ex_ins_data),
-	.ins_is_nop(ex_ins_is_nop),    
+    .ins_rob_id(wb_ins_rob_id),
+    .dest_addr(wb_dest_addr), 
+    .ins_type(wb_ins_type),
+    .ins_data(wb_ins_data),
+	.ins_is_nop(wb_ins_is_nop),    
     
     // To ID stage
     .commit_reg_addr(commit_reg_addr),
