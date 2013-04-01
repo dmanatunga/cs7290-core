@@ -18,6 +18,9 @@ module test_exec();
    reg 	 pred_src1;
    reg 	 pred_src2;
    reg   reset;
+   reg   ins_nop;
+   reg   muxa;
+   reg   [1:0]muxb;
 	
 initial begin
    clk = 0;
@@ -30,14 +33,20 @@ initial begin
    ins_type = 3'b011;
    pred_src1 = 1;
    pred_src2 = 7;
+   ins_nop = 1;
+   srcA = 7;
+   srcB = 10;
+   muxa = 1;
+   muxb = 3;
+#200   ins_nop = 0;
 #160	reset = 0;
-	srcA = 7;
-	srcB = 10;
 	dest_reg = 3'b001;
 	rob_entry = 4'b0001;
-	latency_counter = 5'b01110;
+	latency_counter = 5'b00110;
 	func_unit = 2;
 #100	func_unit = 1;
+	srcB = 5;
+   	complex_alu_op= 3'b000;
 	rob_entry = 4'b00010;
 	dest_reg = 3'b010;
    	ins_type = 3'b001;
@@ -52,8 +61,12 @@ initial begin
 	rob_entry = 4'b00100;
 	dest_reg = 3'b100;
    	ins_type = 3'b000;
-#100	func_unit = 5;
-#630 	ctrl_sigs = 0;
+#100	ins_nop = 1;
+#100	ins_nop = 0;
+#100	func_unit = 0;
+#100	func_unit = 3;
+#430 	ctrl_sigs = 0;
+	ins_nop = 1;
 	//#105 ctrl_sigs = 4'h4;
    //#230 ctrl_sigs = 4'h7;
 	//#105 ctrl_sigs = 4'h9;
@@ -75,13 +88,16 @@ exec_stage exec_stage1(
 	.latency_counter(latency_counter),
 	.R2_DataSrcA(srcA),
 	.R3_DataSrcB(srcB),
-	.func_unit(func_unit),
+	.func_select(func_unit),
 	.ins_type(ins_type),
 	.float_op(float_op),
 	.pred_op(pred_op),
 	.complex_alu_op(complex_alu_op),
 	.simple_alu_op(simple_alu_op),
 	.pred_src1(pred_src1),
+	.ins_nop(ins_nop),
+	.muxa(muxa),
+	.muxb(muxb),
 	.pred_src2(pred_src2)
 );
 

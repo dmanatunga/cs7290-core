@@ -1,4 +1,4 @@
-`include "globals.vh"
+`include "../globals.vh"
 module ID(
 	// Inputs
 	clk,
@@ -179,9 +179,9 @@ wire 							resource_stall;
 wire 							issue;
 
 wire                               issue_reg_dest_valid;
-wire   [REG_ADDR_SIZE-1:0]         issue_reg_dest_addr;
+wire   [`REG_ADDR_SIZE-1:0]         issue_reg_dest_addr;
 wire                               issue_pred_dest_valid;
-wire   [PRED_ADDR_SIZE-1:0]        issue_pred_dest_addr;
+wire   [`PRED_ADDR_SIZE-1:0]        issue_pred_dest_addr;
 
 // Decode instruction to its componenets
 assign pred_ins = ins[`INS_WIDTH-1];
@@ -295,7 +295,7 @@ mux2to1 #(.DATA_WIDTH(`PRED_DATA_WIDTH))
 assign issue_reg_dest_valid = ex_ins_type[1] & ~ex_ins_type[0];
 assign issue_pred_dest_valid = ex_ins_type[1] & ex_ins_type[0];
 assign issue_reg_dest_addr = ex_dest_addr[`REG_ADDR_SIZE-1:0];
-assign issue_pred_dest_addr = ex_pred_addr[`PRED_ADDR_SIZE-1:0];
+assign issue_pred_dest_addr = ex_dest_addr[`PRED_ADDR_SIZE-1:0];
 // Scoreboarding mechanism 
 scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
              .PRED_ADDR_SIZE(`PRED_ADDR_SIZE),
@@ -325,7 +325,7 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
     .free_units(free_units),
 //    .free_unit(free_unit),
 //    .free_unit_id(free_unit_id),
-    .issue(ex_nop),
+    .issue(ex_is_nop),
     .issue_reg_dest_valid(issue_reg_dest_valid),
     .issue_reg_dest_addr(issue_reg_dest_addr),
     .issue_pred_dest_valid(issue_pred_dest_valid),
@@ -335,7 +335,8 @@ scoreboard #(.REG_ADDR_SIZE(`REG_ADDR_SIZE),
 );
 
 // Control Unit to generate control signals
-control_unit control(
+control_unit #(.OPCODE_SIZE(`OPCODE_SIZE))
+  control(
     .clk(clk),
     .reset(reset),
     .opcode(opcode),
@@ -393,7 +394,7 @@ assign ins_nop = ins_is_nop | id_stalls_if | ~issue;
 assign ins_id = entry_id;
 
 // WB stage values
-assign add_rob_entry = ~id_stalls_if;
+assign add_rob_entry = ~id_stalls_if & ~ins_is_nop;
 assign entry_dest_addr = dest_addr;
 assign entry_ins_type = predicate ? ins_type : `INS_TYPE_SIZE'b0;
 assign entry_ins_state = ~predicate;

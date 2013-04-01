@@ -1,4 +1,4 @@
-`include "globals.vh"
+`include "../globals.vh"
 module WB(
     // Inputs
     clk,
@@ -55,7 +55,7 @@ input	[`DATA_WIDTH-1:0]	ins_data;
 output	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;
 output	[`PRED_ADDR_SIZE-1:0]	commit_pred_addr;
 output				rob_full;
-output				add_entry_id;
+output	[`ROB_ID_SIZE-1:0]	add_entry_id;
 output				wr_reg_en;
 output	[`REG_ADDR_SIZE-1:0]	wr_reg_addr;
 output	[`REG_DATA_WIDTH-1:0]	wr_reg_data;
@@ -94,6 +94,8 @@ assign commit_pred_addr = commit_dest_addr[`PRED_ADDR_SIZE-1:0];
 // Writeback signals for write stage (wr-reg is type 10, and wr-pred is type 11)
 assign wr_reg_en = ins_type[1] & ~ins_type[0];
 assign wr_pred_en = ins_type[1] & ins_type[0];
+assign wr_reg_addr = dest_addr[`REG_ADDR_SIZE-1:0];
+assign wrt_pred_addr = dest_addr[`PRED_ADDR_SIZE-1:0];
 
 // Indicate if rob_full based on full signal, or if we are commiting
 assign rob_full = ~commit & is_rob_full;

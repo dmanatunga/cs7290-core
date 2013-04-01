@@ -28,12 +28,13 @@ module control_unit(
 	latency
 );
 
-localparam NUM_OPS = 1 << `OPCODE_SIZE;
+parameter OPCODE_SIZE = 6;
+localparam NUM_OPS = 1 << OPCODE_SIZE;
 
 // Inputs
 input clk;
 input reset;
-input	[`OPCODE_SIZE-1:0]	opcode;
+input	[OPCODE_SIZE-1:0]	opcode;
 
 //Outputs
 output 	invalid_op;
@@ -60,28 +61,28 @@ output	[2:0]		float_op;
 output	[3:0]		latency;
 
 // Registers for storing signal data
-reg 	invalid_op_reg[0:NUM_OPS];
-reg 	reg_dest_valid_reg[0:NUM_OPS];
-reg 	reg_src1_valid_reg[0:NUM_OPS];
-reg 	reg_src2_valid_reg[0:NUM_OPS];
-reg 	pred_dest_valid_reg[0:NUM_OPS];
-reg 	pred_src1_valid_reg[0:NUM_OPS];
-reg 	pred_src2_valid_reg[0:NUM_OPS];
-reg 	dest_is_src_reg[0:NUM_OPS];
-reg 	pred_src_reg_reg[0:NUM_OPS];
-reg	[1:0]		ins_type_reg[0:NUM_OPS];
-reg 	br_ins_reg[0:NUM_OPS];
-reg	[1:0]		br_type_reg[0:NUM_OPS];
-reg 	mem_ins_reg[0:NUM_OPS];
-reg 	mem_type_reg[0:NUM_OPS];
-reg	[2:0]		func_unit_reg[0:NUM_OPS];
-reg 	muxa_reg[0:NUM_OPS];
-reg	[1:0]		muxb_reg[0:NUM_OPS];
-reg	[2:0]		alu_op_reg[0:NUM_OPS];
-reg	[2:0]		complex_alu_op_reg[0:NUM_OPS];
-reg	[2:0]		pred_op_reg[0:NUM_OPS];
-reg	[2:0]		float_op_reg[0:NUM_OPS];
-reg	[3:0]		latency_reg[0:NUM_OPS];
+reg 	invalid_op_reg[0:NUM_OPS-1];
+reg 	reg_dest_valid_reg[0:NUM_OPS-1];
+reg 	reg_src1_valid_reg[0:NUM_OPS-1];
+reg 	reg_src2_valid_reg[0:NUM_OPS-1];
+reg 	pred_dest_valid_reg[0:NUM_OPS-1];
+reg 	pred_src1_valid_reg[0:NUM_OPS-1];
+reg 	pred_src2_valid_reg[0:NUM_OPS-1];
+reg 	dest_is_src_reg[0:NUM_OPS-1];
+reg 	pred_src_reg_reg[0:NUM_OPS-1];
+reg	[1:0]		ins_type_reg[0:NUM_OPS-1];
+reg 	br_ins_reg[0:NUM_OPS-1];
+reg	[1:0]		br_type_reg[0:NUM_OPS-1];
+reg 	mem_ins_reg[0:NUM_OPS-1];
+reg 	mem_type_reg[0:NUM_OPS-1];
+reg	[2:0]		func_unit_reg[0:NUM_OPS-1];
+reg 	muxa_reg[0:NUM_OPS-1];
+reg	[1:0]		muxb_reg[0:NUM_OPS-1];
+reg	[2:0]		alu_op_reg[0:NUM_OPS-1];
+reg	[2:0]		complex_alu_op_reg[0:NUM_OPS-1];
+reg	[2:0]		pred_op_reg[0:NUM_OPS-1];
+reg	[2:0]		float_op_reg[0:NUM_OPS-1];
+reg	[3:0]		latency_reg[0:NUM_OPS-1];
 
 // Output control signals
 assign invalid_op = invalid_op_reg[opcode];

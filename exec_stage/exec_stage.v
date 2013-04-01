@@ -1,3 +1,4 @@
+`include "../globals.vh"
 module exec_stage(
    //inputs
    clk,
@@ -37,11 +38,11 @@ module exec_stage(
    );
 
 parameter CTRL_WIDTH 	= 32; //control signal width
-parameter DATA_WIDTH 	= 32; //control signal width
+parameter DATA_WIDTH 	= `DATA_WIDTH; //control signal width
 parameter DUMMY_ALU  	= 3'b101;
 parameter NUM_ALU    	= 5;  // +1 for a dummt alu
-parameter ROB_SIZE    	= 4;  // +1 for a dummt alu
-parameter DEST_REG_SIZE = 3;
+parameter ROB_SIZE    	= `ROB_ID_SIZE;  // +1 for a dummt alu
+parameter DEST_REG_SIZE = `DEST_ADDR_SIZE;
 
 //******Inputs******
    input        clk;

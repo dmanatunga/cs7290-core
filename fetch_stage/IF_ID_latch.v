@@ -1,3 +1,4 @@
+`include "../globals.vh"
 module IF_ID_latch(
   // Inputs
   clk,

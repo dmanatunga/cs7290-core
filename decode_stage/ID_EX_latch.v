@@ -1,3 +1,4 @@
+`include "../globals.vh"
 module ID_EX_latch(
   // Inputs
   clk			,

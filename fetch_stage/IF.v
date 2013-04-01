@@ -1,4 +1,4 @@
-`include "globals.vh"
+`include "../globals.vh"
 module IF(
     // Inputs
     clk,

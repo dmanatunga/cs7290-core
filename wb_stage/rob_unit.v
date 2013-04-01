@@ -44,7 +44,7 @@ input                     		commit_head;
 
 // Outputs
 output	[INS_STATE_SIZE-1:0]		head_state;
-output                          	head_dest_addr;
+output	[DEST_ADDR_SIZE-1:0]          	head_dest_addr;
 output	[INS_TYPE_SIZE-1:0]	       	head_ins_type;
 output reg    [ROB_ADDR_SIZE-1:0]	head_id;
 output reg	[ROB_ADDR_SIZE-1:0]		tail_id;
@@ -60,8 +60,8 @@ integer i;
 
 assign head_entry = rob[head_id];
 assign head_state = head_entry[INS_STATE_SIZE+STATE_BIT_LOW_LOC-1:STATE_BIT_LOW_LOC];
-assign head_dest_addr = head_entry[TYPE_BIT_LOW_LOC+INS_TYPE_SIZE-1:TYPE_BIT_LOW_LOC];
-assign head_ins_type = head_entry[DEST_BIT_LOW_LOC+DEST_ADDR_SIZE-1:DEST_BIT_LOW_LOC];
+assign head_ins_type  = head_entry[TYPE_BIT_LOW_LOC+INS_TYPE_SIZE-1:TYPE_BIT_LOW_LOC];
+assign head_dest_addr = head_entry[DEST_BIT_LOW_LOC+DEST_ADDR_SIZE-1:DEST_BIT_LOW_LOC];
 
 assign next_head = head_id + 1;
 assign next_entry = tail_id + 1;

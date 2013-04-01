@@ -268,6 +268,7 @@ ID id(
 	.commit_pred_data(commit_pred_data)	
 );
 
+assign id_stall_latch = 1'b0;
 // Latch between Instruction Decode and Execute
 ID_EX_latch id_ex_latch(
 	.clk			(clk),
