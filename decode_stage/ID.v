@@ -59,7 +59,9 @@ module ID(
 	add_rob_entry,
 	entry_dest_addr,
 	entry_ins_type,
+	entry_exception,
 	entry_ins_state,
+
 	commit_reg_data,
 	commit_pred_data
 );
@@ -137,6 +139,7 @@ output	[3:0]		latency;
 output							add_rob_entry;
 output	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
 output  [`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
+output	[`EXCEPTION_ID_SIZE-1:0]	entry_exception;
 output	[`INS_STATE_SIZE-1:0]	entry_ins_state;
 output  [`REG_DATA_WIDTH-1:0]	commit_reg_data;
 output	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
@@ -163,6 +166,7 @@ wire                            pred_val; // Predicate register value
 
 // Decoder's control signal wires
 wire 							invalid_op;
+wire							skip_to_retire;
 wire 							reg_dest_valid;
 wire 							reg_src1_valid;
 wire 							reg_src2_valid;
@@ -342,6 +346,7 @@ control_unit #(.OPCODE_SIZE(`OPCODE_SIZE))
     .opcode(opcode),
     
 	.invalid_op(invalid_op),
+	.skip_to_retire(skip_to_retire),
     // Mainly used by ID stage
     .reg_dest_valid(reg_dest_valid),
 	.reg_src1_valid(reg_src1_valid),
@@ -386,8 +391,8 @@ mux4to1 #(.DATA_WIDTH(`DATA_WIDTH))
 
 // Issue if we can add to ROB and send to EX stage
 assign id_stalls_if = rob_full | (resource_stall & predicate) | ~predicate_valid;
-// Issue instruction if we arne't stalling ID 
-assign issue = predicate & ~id_stalls_if;
+// Issue instruction if we aren't stalling ID 
+assign issue = predicate & ~id_stalls_if & ~skip_to_retire;
 // If instruction was nop, then indicate so to next instruction
 assign ins_nop = ins_is_nop | id_stalls_if | ~issue;
 
@@ -397,7 +402,15 @@ assign ins_id = entry_id;
 assign add_rob_entry = ~id_stalls_if & ~ins_is_nop;
 assign entry_dest_addr = dest_addr;
 assign entry_ins_type = predicate ? ins_type : `INS_TYPE_SIZE'b0;
-assign entry_ins_state = ~predicate;
+assign entry_ins_state = ~predicate | skip_to_retire;
+mux2to1 #(.DATA_WIDTH(`EXCEPTION_ID_SIZE))
+	exception_mux(
+		.a(`NO_EXCEPTION),
+		.b(`INVALID_OP_EXCEPTION),
+		.sel(invalid_op),
+		.out(entry_exception)
+);
+
 // Selecting branch value
 assign sel_br = br_ins & issue;	
 

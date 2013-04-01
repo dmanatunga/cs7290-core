@@ -124,6 +124,7 @@ wire    [`DATA_WIDTH-1:0]	ex_next_pc; // Also to ex latch
 wire							add_rob_entry;
 wire	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
 wire	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
+wire	[`EXCEPTION_ID_SIZE:0]	entry_exception;
 wire	[`INS_STATE_SIZE-1:0]	entry_ins_state;
 wire	[`REG_DATA_WIDTH-1:0]	commit_reg_data;
 wire	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
@@ -133,6 +134,7 @@ wire	[`ROB_ID_SIZE-1:0]		wb_ins_rob_id;
 wire	[`DEST_ADDR_SIZE-1:0]		wb_dest_addr;
 wire	[`INS_TYPE_SIZE-1:0]		wb_ins_type;
 wire    [`DATA_WIDTH-1:0]		wb_ins_data;
+wire	[`EXCEPTION_ID_SIZE-1:0]	wb_exception;
 wire    [`DATA_WIDTH-1:0]		wb_ins_is_nop;
     
 // From WB stage to ID stage
@@ -151,6 +153,7 @@ wire    [`NUM_FUNC_UNITS-1:0]ex_free_units;
 
 // From WB stage to EX stage
 wire	commit_st;
+wire 	halt;
 
 pipeline_control_unit pipeline(
 	.if_nop(if_nop),
@@ -263,6 +266,7 @@ ID id(
 	.add_rob_entry(add_rob_entry),
 	.entry_dest_addr(entry_dest_addr),
 	.entry_ins_type(entry_ins_type),
+	.entry_exception(entry_exception),
 	.entry_ins_state(entry_ins_state),
 	.commit_reg_data(commit_reg_data),
 	.commit_pred_data(commit_pred_data)	
@@ -367,6 +371,7 @@ WB  wb(
 	.add_rob_entry(add_rob_entry),
     .entry_dest_addr(entry_dest_addr),
     .entry_ins_type(entry_ins_type),
+    .entry_exception(entry_exception)
     .entry_ins_state(entry_ins_state),
     .commit_reg_data(commit_reg_data),
     .commit_pred_data(commit_pred_data),
@@ -375,8 +380,10 @@ WB  wb(
     .dest_addr(wb_dest_addr), 
     .ins_type(wb_ins_type),
     .ins_data(wb_ins_data),
+    .ins_exception(wb_exception), 
     .is_nop(wb_ins_is_nop),    
-    
+   
+    .halt(halt),
     // To ID stage
     .commit_reg_addr(commit_reg_addr),
     .commit_pred_addr(commit_pred_addr),

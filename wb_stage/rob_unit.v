@@ -5,8 +5,11 @@ module rob_unit(
     add_entry,
     entry_dest_addr, 
     entry_ins_type,
+    entry_exception;
 	entry_ins_state,
     set_ins_finished,   
+    set_exception,
+    exception,
     ins_rob_id,   
     commit_head,
     
@@ -14,6 +17,7 @@ module rob_unit(
     head_id,
     tail_id,
     head_state,
+    head_exception,
     head_dest_addr,
     head_ins_type,
     is_full
@@ -24,10 +28,11 @@ parameter DEST_ADDR_SIZE = 4;
 parameter INS_TYPE_SIZE = 2;
 parameter INS_STATE_SIZE = 1;
 parameter FINISHED_STATE = 1'b1;
-
-localparam ROB_ENTRY_SIZE = DEST_ADDR_SIZE + INS_TYPE_SIZE + INS_STATE_SIZE;
+parameter EXCEPTION_ID_SIZE = 3;
+localparam ROB_ENTRY_SIZE = DEST_ADDR_SIZE + INS_TYPE_SIZE +EXCEPTION_SIZE +  INS_STATE_SIZE;
 localparam STATE_BIT_LOW_LOC = 0;
-localparam TYPE_BIT_LOW_LOC = INS_STATE_SIZE;
+localparam EXCEPTION_BIT_LOW_LOC = INS_STATE_SIZE;
+localparam TYPE_BIT_LOW_LOC = EXCEPTION_BIT_LOW_LOC + EXCEPTION_ID_SIZE;
 localparam DEST_BIT_LOW_LOC = TYPE_BIT_LOW_LOC + INS_TYPE_SIZE;
 localparam ROB_SIZE = 1 << ROB_ADDR_SIZE;
 
@@ -37,9 +42,12 @@ input             				reset;
 input                     		add_entry;
 input	[DEST_ADDR_SIZE-1:0]	entry_dest_addr;
 input	[INS_TYPE_SIZE-1:0]		entry_ins_type;
+input	[EXCEPTION_ID_SIZE-1:0]	entry_exception;
 input	[INS_STATE_SIZE-1:0]	entry_ins_state;
 input	[ROB_ADDR_SIZE-1:0]		ins_rob_id;
 input                     		set_ins_finished;
+input                     		set_exception;
+input	[EXCEPTION_ID_SIZE-1:0]		exception;
 input                     		commit_head;
 
 // Outputs
@@ -60,6 +68,7 @@ integer i;
 
 assign head_entry = rob[head_id];
 assign head_state = head_entry[INS_STATE_SIZE+STATE_BIT_LOW_LOC-1:STATE_BIT_LOW_LOC];
+assign head_exception = head_entry[EXCEPTION_ID_SIZE+EXCEPTION_BIT_LOW_LOC-1:EXCEPTION_BIT_LOW_LOC];
 assign head_ins_type  = head_entry[TYPE_BIT_LOW_LOC+INS_TYPE_SIZE-1:TYPE_BIT_LOW_LOC];
 assign head_dest_addr = head_entry[DEST_BIT_LOW_LOC+DEST_ADDR_SIZE-1:DEST_BIT_LOW_LOC];
 
@@ -77,7 +86,7 @@ always @(posedge clk) begin
 	end else begin
 		if (add_entry) begin
 			// Add entry to ROB
-			rob[tail_id] <= {entry_dest_addr, entry_ins_type, entry_ins_state};
+			rob[tail_id] <= {entry_dest_addr, entry_ins_type, entry_exception, entry_ins_state};
 			tail_id <= next_entry;
 			if (commit_head) begin
 				is_full <= next_head == next_entry;
@@ -100,6 +109,9 @@ always @(posedge clk) begin
 		if (set_ins_finished) begin
 			// Set the given instruction as finished
 			rob[ins_rob_id][STATE_BIT_LOW_LOC] <= FINISHED_STATE;
+		end
+		if (set_exception) begin
+			rob[ins_rob_id][EXCEPTION_ID_SIZE+EXCEPTION_BIT_LOW_LOC-1:EXCEPTION_BIT_LOW_LOC] = exception;
 		end
 	end  
 end

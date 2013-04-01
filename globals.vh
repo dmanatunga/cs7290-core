@@ -29,3 +29,9 @@
 // Note: should be changed to size of pred, if
 // more predicate registers than general purpose registers
 `define DEST_ADDR_SIZE `REG_ADDR_SIZE
+
+// EXCEPTION ID SIZE
+`define EXCEPTION_ID_SIZE 3
+`define	NO_EXCEPTION 3'd0
+`define INVALID_OP_EXCEPTION 3'd1
+`define DIV_BY_ZERO_EXCEPTION 3'd2
