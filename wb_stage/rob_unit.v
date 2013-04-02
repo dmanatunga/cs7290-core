@@ -5,8 +5,8 @@ module rob_unit(
     add_entry,
     entry_dest_addr, 
     entry_ins_type,
-    entry_exception;
-	entry_ins_state,
+    entry_exception,
+    entry_ins_state,
     set_ins_finished,   
     set_exception,
     exception,
@@ -29,7 +29,7 @@ parameter INS_TYPE_SIZE = 2;
 parameter INS_STATE_SIZE = 1;
 parameter FINISHED_STATE = 1'b1;
 parameter EXCEPTION_ID_SIZE = 3;
-localparam ROB_ENTRY_SIZE = DEST_ADDR_SIZE + INS_TYPE_SIZE +EXCEPTION_SIZE +  INS_STATE_SIZE;
+localparam ROB_ENTRY_SIZE = DEST_ADDR_SIZE + INS_TYPE_SIZE +EXCEPTION_ID_SIZE +  INS_STATE_SIZE;
 localparam STATE_BIT_LOW_LOC = 0;
 localparam EXCEPTION_BIT_LOW_LOC = INS_STATE_SIZE;
 localparam TYPE_BIT_LOW_LOC = EXCEPTION_BIT_LOW_LOC + EXCEPTION_ID_SIZE;
@@ -57,7 +57,7 @@ output	[INS_TYPE_SIZE-1:0]	       	head_ins_type;
 output reg    [ROB_ADDR_SIZE-1:0]	head_id;
 output reg	[ROB_ADDR_SIZE-1:0]		tail_id;
 output reg							is_full;  
-
+output [EXCEPTION_ID_SIZE- 1 : 0]	head_exception;
 
 
 reg	[ROB_ENTRY_SIZE-1:0]	rob[0:ROB_SIZE-1];

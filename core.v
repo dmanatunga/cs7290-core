@@ -371,7 +371,7 @@ WB  wb(
 	.add_rob_entry(add_rob_entry),
     .entry_dest_addr(entry_dest_addr),
     .entry_ins_type(entry_ins_type),
-    .entry_exception(entry_exception)
+    .entry_exception(entry_exception),
     .entry_ins_state(entry_ins_state),
     .commit_reg_data(commit_reg_data),
     .commit_pred_data(commit_pred_data),

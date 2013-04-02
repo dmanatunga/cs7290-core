@@ -71,7 +71,7 @@ output	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
 output	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
 output				commit_st;
 
-reg	[`EXCEPTION_ID_SIZE-1:0]	exception_register;
+reg	[`EXCEPTION_ID_SIZE-1:0]	exception_reg;
 wire	commit;
 wire	ins_is_head;
 wire	[`ROB_ID_SIZE-1:0]	head_id;
@@ -157,7 +157,7 @@ rob_unit #(.ROB_ADDR_SIZE(`ROB_ID_SIZE),
     .add_entry(add_rob_entry),
     .entry_dest_addr(entry_dest_addr),
     .entry_ins_type(entry_ins_type),
-    .entry(exception(entry_exception),
+    .entry(entry_exception),
 	.entry_ins_state(entry_ins_state),
     .ins_rob_id(ins_rob_id),
     .set_ins_finished(set_ins_finished),
@@ -184,7 +184,7 @@ always @(posedge clk) begin
 		halt <= 1;
 		if (ins_is_head) begin
 			exception_reg <= head_exception;
-		else
+		end else begin
 			exception_reg <= ins_exception;
 		end
 	end
