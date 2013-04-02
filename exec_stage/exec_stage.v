@@ -34,6 +34,7 @@ module exec_stage(
    alu_free_out,
    rob_entry_out,
    ins_nop_out,
+   ins_exception, 
    dest_reg_pass
    );
 
@@ -111,8 +112,10 @@ parameter DEST_REG_SIZE = `DEST_ADDR_SIZE;
    output     [NUM_ALU - 1: 0]		alu_free_out;
    output     [ROB_SIZE - 1:0]  	rob_entry_out; 
    output       			ins_nop_out;
+   output [`EXCEPTION_ID_SIZE-1:0] ins_exception;
 
 //******Input selection Mux start******
+   assign ins_exception = `EXCEPTION_ID_SIZE'd0;	//FIX
    assign mem_data_in = (mem_type) ? R2_DataSrcA 	: 32'h0000_0000;
    assign mem_addr    = (is_mem)   ?(alu_inA + imm1): 32'h0000_0000;//FIX
    assign ctrl_pass   = {ctrl_sigs,ins_type};	//FIX
@@ -275,7 +278,8 @@ assign arb_alu_select   = (alu_done[3] == 1'b1)? 3'b011 : ( (alu_done[2] == 1'b1
 assign alu_out          = (arb_alu_select == DUMMY_ALU)? 0 : alu_result     [arb_alu_select];
 assign dest_reg_pass    = (arb_alu_select == DUMMY_ALU)? 0 : alu_dest_reg   [arb_alu_select];
 assign rob_entry_out    = (arb_alu_select == DUMMY_ALU)? 0 : alu_rob_entry  [arb_alu_select];
-assign ctrl_sigs_pass   = (arb_alu_select == DUMMY_ALU)? 0 : alu_ctrl_sigs  [arb_alu_select];
+assign ctrl_sigs_pass   = (arb_alu_select == DUMMY_ALU)? 0 : alu_ctrl_sigs  [arb_alu_select][`INS_TYPE_SIZE-1 + 3:3];
+//assign ctrl_sigs_pass = alu_controls[`INS_TYPE_SIZE-1 + 3:3];
 assign ins_nop_out   	= (arb_alu_select == DUMMY_ALU)? 1 : 0;
 
 assign alu_free_out[4] = mem_stall;

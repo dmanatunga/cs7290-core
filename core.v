@@ -124,7 +124,7 @@ wire    [`DATA_WIDTH-1:0]	ex_next_pc; // Also to ex latch
 wire							add_rob_entry;
 wire	[`DEST_ADDR_SIZE-1:0]	entry_dest_addr;
 wire	[`INS_TYPE_SIZE-1:0]	entry_ins_type;
-wire	[`EXCEPTION_ID_SIZE:0]	entry_exception;
+wire	[`EXCEPTION_ID_SIZE -1:0]	entry_exception;
 wire	[`INS_STATE_SIZE-1:0]	entry_ins_state;
 wire	[`REG_DATA_WIDTH-1:0]	commit_reg_data;
 wire	[`PRED_DATA_WIDTH-1:0]	commit_pred_data;
@@ -359,7 +359,8 @@ exec_stage ex(
    .alu_free_out	(ex_free_units),
    .rob_entry_out	(wb_ins_rob_id),
    .ins_nop_out		(wb_ins_is_nop),
-   .dest_reg_pass	(wb_dest_addr)
+   .dest_reg_pass	(wb_dest_addr),
+   .ins_exception	(wb_exception) 
    );
 
 
