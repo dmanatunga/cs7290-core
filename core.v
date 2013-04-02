@@ -135,7 +135,7 @@ wire	[`DEST_ADDR_SIZE-1:0]		wb_dest_addr;
 wire	[`INS_TYPE_SIZE-1:0]		wb_ins_type;
 wire    [`DATA_WIDTH-1:0]		wb_ins_data;
 wire	[`EXCEPTION_ID_SIZE-1:0]	wb_exception;
-wire    [`DATA_WIDTH-1:0]		wb_ins_is_nop;
+wire    				wb_ins_is_nop;
     
 // From WB stage to ID stage
 wire	[`REG_ADDR_SIZE-1:0]	commit_reg_addr;

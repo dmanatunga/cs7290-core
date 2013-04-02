@@ -54,9 +54,9 @@ parameter DEST_REG_SIZE = `DEST_ADDR_SIZE;
    input [31:0] imm1;
    input [31:0] imm2;
    input [31:0] imm3;
-   input  	pred_src1;
-   input  	pred_src2;
-   input [4:0]  latency_counter;        //FIX
+   input [`PRED_DATA_WIDTH-1:0] 	pred_src1;
+   input [`PRED_DATA_WIDTH-1:0] 	pred_src2;
+   input [3:0]  latency_counter;        //FIX
    input [ROB_SIZE - 1:0]  rob_entry;
    input        reset;  //FIX
    input [2:0]   func_select;
@@ -67,24 +67,24 @@ parameter DEST_REG_SIZE = `DEST_ADDR_SIZE;
    input [2:0] complex_alu_op;
    input [2:0] pred_op;
    input [2:0] float_op;
-   input [2:0] ins_type;
+   input [`INS_TYPE_SIZE-1:0] ins_type;
    input       ins_nop;
    input [31:0] next_pc;
    input muxa;
    input [1:0] muxb;
 
 //******Internal regs/wires******
-   reg  [4:0]    		alu_counter     [NUM_ALU - 1 :0];
+   reg  [3:0]    		alu_counter     [NUM_ALU - 1 :0];
    reg  [ROB_SIZE - 1:0]    	alu_rob_entry   [NUM_ALU - 1 :0];
    reg  [31:0]   		alu_result      [NUM_ALU - 1 :0];
    reg  [DEST_REG_SIZE - 1 :0]  alu_dest_reg    [NUM_ALU - 1 :0];
    reg  [CTRL_WIDTH-1:0]   	alu_ctrl_sigs   [NUM_ALU - 1 :0];
    reg  [NUM_ALU - 1 :0]   	alu_done;
 
-   wire  [31:0]  alu_inA;
-   wire  [31:0]  alu_inB;
-   wire  	pred_srcB;
-   wire  	pred_srcA;
+   wire [31:0]  alu_inA;
+   wire [31:0]  alu_inB;
+   wire [31:0] 	pred_srcB;
+   wire [31:0] 	pred_srcA;
    wire [31:0]  result_alu0;
    wire [31:0]  result_alu1;
    wire [31:0]  result_alu2;
