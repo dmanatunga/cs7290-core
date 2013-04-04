@@ -34,7 +34,8 @@ module WB(
     wr_pred_addr,
     wr_pred_data,
     // To EX stage
-    commit_st
+    commit_st,
+    commit_st_rob_id
 );
 
 // Inputs
@@ -70,6 +71,7 @@ output				wr_pred_en;
 output	[`PRED_ADDR_SIZE-1:0]	wr_pred_addr;
 output	[`PRED_DATA_WIDTH-1:0]	wr_pred_data;
 output				commit_st;
+output	[`ROB_ID_SIZE-1:0]	commit_st_rob_id;
 
 reg	[`EXCEPTION_ID_SIZE-1:0]	exception_reg;
 wire	commit;
@@ -116,10 +118,14 @@ decoder_2bit commit_decoder(
   .in(commit_ins_type),
   .enable(commit),
   .a(),
-  .b(commit_st),
+  .b(),
   .c(commit_reg),
   .d(commit_pred)
 );
+
+
+commit_st = ~commit_ins_type[1] & commit_ins_type[0];
+commit_st_rob_id = head_id;
 
 // Get data for register or predicate register
 assign wr_reg_data = ins_data[`REG_DATA_WIDTH-1:0];
