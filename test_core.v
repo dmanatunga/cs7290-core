@@ -3,7 +3,7 @@
 
 module test_core();
 
-localparam MEM_ID_SIZE = 4;
+localparam MEM_ID_SIZE = 7;
 localparam MEM_SIZE = 1 << MEM_ID_SIZE;
 reg clk;
 reg reset;
@@ -47,12 +47,19 @@ initial begin
 	for (i = 1; i < MEM_SIZE; i = i + 1) begin
 		MEMORY[i] = 0;
 	end
-	MEMORY[0] = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd3};
+	MEMORY[0] =  {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd3};
+	MEMORY[1] =  {1'b0, 2'b00, 6'h0x14, 4'd2, 4'd0, 15'd1};
+	MEMORY[2] =  {1'b0, 2'b00, 6'h0x15, 4'd3, 4'd0, 15'd1};
+	MEMORY[3] =  {1'b0, 2'b00, 6'h0x16, 4'd4, 4'd2, 15'd4};
+	MEMORY[4] =  {1'b0, 2'b00, 6'h0x1d, 23'd40};
+	MEMORY[15] = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd10};
+	MEMORY[16] = {1'b0, 2'b00, 6'h0x14, 4'd2, 4'd0, 15'd111};
+
 	clk = 1'b1;
 	reset = 1'b1;
 	mem_stall = 1'b0;
 #210	reset = 1'b0;
-#600
+#1800
 	$finish;
 end
 
