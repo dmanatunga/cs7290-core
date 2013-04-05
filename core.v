@@ -153,6 +153,7 @@ wire    [`NUM_FUNC_UNITS-1:0]ex_free_units;
 
 // From WB stage to EX stage
 wire	commit_st;
+wire	[`ROB_ID_SIZE-1:0]	commit_st_rob_id;
 wire 	halt;
 
 pipeline_control_unit pipeline(
@@ -361,7 +362,7 @@ exec_stage ex(
    .ins_nop_out		(wb_ins_is_nop),
    .dest_reg_pass	(wb_dest_addr),
    .ins_exception	(wb_exception) 
-   );
+);
 
 
 // Writeback stage
@@ -397,7 +398,8 @@ WB  wb(
     .wr_pred_addr(wr_pred_addr),
     .wr_pred_data(wr_pred_data),
     // To EX stage
-    .commit_st(commit_st)
+    .commit_st(commit_st),
+    .commit_st_rob_id(commit_st_rob_id)
 );
 
 endmodule
