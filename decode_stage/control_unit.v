@@ -681,14 +681,14 @@ always @(posedge clk) begin
 		br_type_reg[22] <= 2'b00;
 		mem_ins_reg[22] <= 1'b0;
 		mem_type_reg[22] <= 1'b0;
-		func_unit_reg[22] <= 3'b001;
+		func_unit_reg[22] <= 3'b010;
 		muxa_reg[22] <= 1'b1;
 		muxb_reg[22] <= 2'b01;
 		alu_op_reg[22] <= 3'b000;
 		complex_alu_op_reg[22] <= 3'b001;
 		pred_op_reg[22] <= 3'b000;
 		float_op_reg[22] <= 3'b000;
-		latency_reg[22] <= 4'b0001;
+		latency_reg[22] <= 4'b0110;
 
 		// DIVI - 0x17
 		invalid_op_reg[23] <= 1'b0;
