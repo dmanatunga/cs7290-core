@@ -49,68 +49,68 @@ assign result = (select == 1)? result1 : ((select == 2)? result2 : ((select == 3
       .quotient(result2)
    );
    
-   int_mod int_mod1(
+   int_div int_mod1(
       .clock (clock),
-      .dataa (srcA3),
-      .datab (srcB),
-      .result(result3)
+      .numer (srcA3),
+      .denom (srcB),
+      .remain(result3)
    );
    
    int_shl int_shl1(
       .clock (clock),
-      .dataa (srcA4),
-      .datab (srcB),
+      .data (srcA4),
+      .distance (srcB[4:0]),	//limit by megafunc
       .result(result4)
    );
 
    int_shr int_shlr1(
       .clock (clock),
-      .dataa (srcA5),
-      .datab (srcB),
+      .data (srcA5),
+      .distance (srcB[4:0]),
       .result(result5)
    );
 //******ALU Blocks Instantiation end******
 endmodule
 
 //******ALU Blocks Definition start******
-module int_mod(
-      clock ,
-      dataa ,
-      datab ,
-      result);
-input    [31:0] dataa;
-input    [31:0] datab;
-output   [31:0] result;
-input          clock;
+//module int_mod(
+//      clock ,
+//      dataa ,
+//      datab ,
+//      result);
+//input    [31:0] dataa;
+//input    [31:0] datab;
+//output   [31:0] result;
+//input          clock;
+//
+//assign result = dataa % datab;	//FIX
+//endmodule
 
-assign result = dataa % datab;	//FIX
-endmodule
-
-module int_shl(
-      clock ,
-      dataa ,
-      datab ,
-      result);
-input    [31:0] dataa;
-input    [31:0] datab;
-output   [31:0] result;
-input          clock;
-
-assign result = dataa << datab;	//FIX
-endmodule
-
-module int_shr(
-      clock ,
-      dataa ,
-      datab ,
-      result);
-input    [31:0] dataa;
-input    [31:0] datab;
-output   [31:0] result;
-input          clock;
-
-assign result = dataa >> datab;	//FIX
-endmodule
+//module int_shl(
+//      clock ,
+//      dataa ,
+//      datab ,
+//      result);
+//input    [31:0] dataa;
+//input    [31:0] datab;
+//output   [31:0] result;
+//input          clock;
+//
+//assign result = dataa << datab;	//FIX
+//endmodule
+//
+//module int_shr(
+//      clock ,
+//      dataa ,
+//      datab ,
+//      result);
+//input    [31:0] dataa;
+//input    [31:0] datab;
+//output   [31:0] result;
+//input          clock;
+//
+//assign result = dataa >> datab;	//FIX
+//endmodule
 //******ALU Blocks Definition end******
 
 
@@ -128,15 +128,3 @@ endmodule
 //
 //endmodule
 
-//Dead code
-//always@(complex_alu_op, select)
-////always@(complex_alu_op)
-//begin
-//      case(complex_alu_op)
-//	4'h1: select = 1;
-//	4'h2: select = 2;
-//	4'h3: select = 3;
-//	4'h4: select = 4;
-//	default: select = select;	//FIX this
-//      endcase
-//end

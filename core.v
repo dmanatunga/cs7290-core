@@ -361,6 +361,8 @@ exec_stage ex(
    .rob_entry_out	(wb_ins_rob_id),
    .ins_nop_out		(wb_ins_is_nop),
    .dest_reg_pass	(wb_dest_addr),
+   .commit_st		(commit_st),
+   .commit_st_rob_id	(commit_st_rob_id),
    .ins_exception	(wb_exception) 
 );
 

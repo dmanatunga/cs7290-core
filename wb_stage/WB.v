@@ -124,8 +124,8 @@ decoder_2bit commit_decoder(
 );
 
 
-commit_st = ~commit_ins_type[1] & commit_ins_type[0];
-commit_st_rob_id = head_id;
+assign commit_st = ~commit_ins_type[1] & commit_ins_type[0];
+assign commit_st_rob_id = head_id;
 
 // Get data for register or predicate register
 assign wr_reg_data = ins_data[`REG_DATA_WIDTH-1:0];

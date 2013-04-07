@@ -1,12 +1,12 @@
-// megafunction wizard: %ALTFP_DIV%VBB%
+// megafunction wizard: %LPM_CLSHIFT%VBB%
 // GENERATION: STANDARD
 // VERSION: WM1.0
-// MODULE: altfp_div 
+// MODULE: LPM_CLSHIFT 
 
 // ============================================================
-// File Name: fp_div.v
+// File Name: int_shl.v
 // Megafunction Name(s):
-// 			altfp_div
+// 			LPM_CLSHIFT
 //
 // Simulation Library Files(s):
 // 			
@@ -31,17 +31,15 @@
 //Altera or its authorized distributors.  Please refer to the 
 //applicable agreement for further details.
 
-module fp_div (
+module int_shl (
 	clock,
-	dataa,
-	datab,
-	division_by_zero,
-	result)/* synthesis synthesis_clearbox = 1 */;
+	data,
+	distance,
+	result);
 
 	input	  clock;
-	input	[31:0]  dataa;
-	input	[31:0]  datab;
-	output	  division_by_zero;
+	input	[31:0]  data;
+	input	[4:0]  distance;
 	output	[31:0]  result;
 
 endmodule
@@ -50,28 +48,31 @@ endmodule
 // CNX file retrieval info
 // ============================================================
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
+// Retrieval info: PRIVATE: LPM_SHIFTTYPE NUMERIC "0"
+// Retrieval info: PRIVATE: LPM_WIDTH NUMERIC "32"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
-// Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
-// Retrieval info: CONSTANT: DENORMAL_SUPPORT STRING "NO"
-// Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix III"
-// Retrieval info: CONSTANT: OPTIMIZE STRING "SPEED"
-// Retrieval info: CONSTANT: PIPELINE NUMERIC "14"
-// Retrieval info: CONSTANT: REDUCED_FUNCTIONALITY STRING "NO"
-// Retrieval info: CONSTANT: WIDTH_EXP NUMERIC "8"
-// Retrieval info: CONSTANT: WIDTH_MAN NUMERIC "23"
+// Retrieval info: PRIVATE: lpm_widthdist NUMERIC "5"
+// Retrieval info: PRIVATE: lpm_widthdist_style NUMERIC "0"
+// Retrieval info: PRIVATE: new_diagram STRING "1"
+// Retrieval info: PRIVATE: port_direction NUMERIC "0"
+// Retrieval info: LIBRARY: lpm lpm.lpm_components.all
+// Retrieval info: CONSTANT: LPM_PIPELINE NUMERIC "3"
+// Retrieval info: CONSTANT: LPM_SHIFTTYPE STRING "LOGICAL"
+// Retrieval info: CONSTANT: LPM_TYPE STRING "LPM_CLSHIFT"
+// Retrieval info: CONSTANT: LPM_WIDTH NUMERIC "32"
+// Retrieval info: CONSTANT: LPM_WIDTHDIST NUMERIC "5"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
-// Retrieval info: USED_PORT: dataa 0 0 32 0 INPUT NODEFVAL "dataa[31..0]"
-// Retrieval info: USED_PORT: datab 0 0 32 0 INPUT NODEFVAL "datab[31..0]"
-// Retrieval info: USED_PORT: division_by_zero 0 0 0 0 OUTPUT NODEFVAL "division_by_zero"
+// Retrieval info: USED_PORT: data 0 0 32 0 INPUT NODEFVAL "data[31..0]"
+// Retrieval info: USED_PORT: distance 0 0 5 0 INPUT NODEFVAL "distance[4..0]"
 // Retrieval info: USED_PORT: result 0 0 32 0 OUTPUT NODEFVAL "result[31..0]"
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
-// Retrieval info: CONNECT: @dataa 0 0 32 0 dataa 0 0 32 0
-// Retrieval info: CONNECT: @datab 0 0 32 0 datab 0 0 32 0
-// Retrieval info: CONNECT: division_by_zero 0 0 0 0 @division_by_zero 0 0 0 0
+// Retrieval info: CONNECT: @data 0 0 32 0 data 0 0 32 0
+// Retrieval info: CONNECT: @direction 0 0 0 0 GND 0 0 0 0
+// Retrieval info: CONNECT: @distance 0 0 5 0 distance 0 0 5 0
 // Retrieval info: CONNECT: result 0 0 32 0 @result 0 0 32 0
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL fp_div_bb.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl.bsf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL int_shl_bb.v TRUE

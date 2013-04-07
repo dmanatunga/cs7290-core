@@ -93,27 +93,27 @@ assign sub = 0;	//temporary
 endmodule
 
 //******ALU Blocks Definition start******
-module fp_itof(
-      clock ,
-      dataa ,
-      result);
-input    [31:0] dataa;
-output   [31:0] result;
-input          clock;
-
-assign result = dataa;	//FIX
-endmodule
-
-module fp_ftoi(
-      clock ,
-      dataa ,
-      result);
-input    [31:0] dataa;
-output   [31:0] result;
-input          clock;
-
-assign result = dataa;	//FIX
-endmodule
+//module fp_itof(
+//      clock ,
+//      dataa ,
+//      result);
+//input    [31:0] dataa;
+//output   [31:0] result;
+//input          clock;
+//
+//assign result = dataa;	//FIX
+//endmodule
+//
+//module fp_ftoi(
+//      clock ,
+//      dataa ,
+//      result);
+//input    [31:0] dataa;
+//output   [31:0] result;
+//input          clock;
+//
+//assign result = dataa;	//FIX
+//endmodule
 
 module fp_neg(
       dataa ,
