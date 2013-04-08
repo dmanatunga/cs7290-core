@@ -108,7 +108,7 @@ assign commit_pred_addr = commit_dest_addr[`PRED_ADDR_SIZE-1:0];
 assign wr_reg_en = ins_type[1] & ~ins_type[0];
 assign wr_pred_en = ins_type[1] & ins_type[0];
 assign wr_reg_addr = dest_addr[`REG_ADDR_SIZE-1:0];
-assign wrt_pred_addr = dest_addr[`PRED_ADDR_SIZE-1:0];
+assign wr_pred_addr = dest_addr[`PRED_ADDR_SIZE-1:0];
 
 // Indicate if rob_full based on full signal, or if we are commiting
 assign rob_full = ~commit & is_rob_full;
