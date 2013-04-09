@@ -158,19 +158,6 @@ mux2to1 #(.DATA_WIDTH(32))
 
 assign pred_srcB = pred_src2;
  
-//   always@(*)                                           //specify a list of inputs!!
-//   begin
-//      case(ctrl_sigs)
-//         6'h24,6'h23,6'h14,6'h15: begin                 //FIX replace this with `define
-//                   alu_inA      = R2_DataSrcA;
-//                   alu_inB      = imm2;
-//                end
-//         default: begin
-//                   alu_inA      = R2_DataSrcA;
-//                   alu_inB      = R3_DataSrcB;
-//                end
-//      endcase
-//   end
 //******Input selection Mux end******
 
 
