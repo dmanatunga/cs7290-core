@@ -126,10 +126,12 @@ parameter ALU_OP = `FUNC_UNIT_OP_SIZE;
    assign ctrl_pass   = {ctrl_sigs,ins_type};	//FIX
    assign func_unit   = (ins_nop == 1) ? DUMMY_ALU : func_select;
 
-mux2to1 #(.DATA_WIDTH(32)) 
+mux4to1 #(.DATA_WIDTH(32)) 
   alu_MuxA(
-    .a		(next_pc), 
-    .b		(R2_DataSrcA),
+    .a		(32'd0),
+    .b		(32'd0)
+    .c		(next_pc), 
+    .d		(R2_DataSrcA),
     .sel	(muxa),
     .out	(alu_inA)
 );
@@ -148,7 +150,7 @@ mux2to1 #(.DATA_WIDTH(32))
   pred_MuxA(
     .a		(pred_src1), 
     .b		(R2_DataSrcA),
-    .sel	(muxa),
+    .sel	(muxa[0]),
     .out	(pred_srcA)
 );
 
