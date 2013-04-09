@@ -54,7 +54,7 @@ output	[1:0]		br_type;
 output 	mem_ins;
 output 	mem_type;
 output	[2:0]		func_unit;
-output 	muxa;
+output	[1:0]		muxa;
 output	[1:0]		muxb;
 output	[2:0]		alu_op;
 output	[2:0]		complex_alu_op;
@@ -79,7 +79,7 @@ reg	[1:0]		br_type_reg[0:NUM_OPS-1];
 reg 	mem_ins_reg[0:NUM_OPS-1];
 reg 	mem_type_reg[0:NUM_OPS-1];
 reg	[2:0]		func_unit_reg[0:NUM_OPS-1];
-reg 	muxa_reg[0:NUM_OPS-1];
+reg	[1:0]		muxa_reg[0:NUM_OPS-1];
 reg	[1:0]		muxb_reg[0:NUM_OPS-1];
 reg	[2:0]		alu_op_reg[0:NUM_OPS-1];
 reg	[2:0]		complex_alu_op_reg[0:NUM_OPS-1];
@@ -132,7 +132,7 @@ always @(posedge clk) begin
 		mem_ins_reg[0] <= 1'b0;
 		mem_type_reg[0] <= 1'b0;
 		func_unit_reg[0] <= 3'b000;
-		muxa_reg[0] <= 1'b0;
+		muxa_reg[0] <= 2'b00;
 		muxb_reg[0] <= 2'b00;
 		alu_op_reg[0] <= 3'b000;
 		complex_alu_op_reg[0] <= 3'b000;
@@ -157,7 +157,7 @@ always @(posedge clk) begin
 		mem_ins_reg[1] <= 1'd0;
 		mem_type_reg[1] <= 1'd0;
 		func_unit_reg[1] <= 3'd0;
-		muxa_reg[1] <= 1'd0;
+		muxa_reg[1] <= 2'd0;
 		muxb_reg[1] <= 2'd0;
 		alu_op_reg[1] <= 3'd0;
 		complex_alu_op_reg[1] <= 3'd0;
@@ -182,7 +182,7 @@ always @(posedge clk) begin
 		mem_ins_reg[2] <= 1'd0;
 		mem_type_reg[2] <= 1'd0;
 		func_unit_reg[2] <= 3'd0;
-		muxa_reg[2] <= 1'd0;
+		muxa_reg[2] <= 2'd0;
 		muxb_reg[2] <= 2'd0;
 		alu_op_reg[2] <= 3'd0;
 		complex_alu_op_reg[2] <= 3'd0;
@@ -207,7 +207,7 @@ always @(posedge clk) begin
 		mem_ins_reg[3] <= 1'd0;
 		mem_type_reg[3] <= 1'd0;
 		func_unit_reg[3] <= 3'd0;
-		muxa_reg[3] <= 1'd0;
+		muxa_reg[3] <= 2'd0;
 		muxb_reg[3] <= 2'd0;
 		alu_op_reg[3] <= 3'd0;
 		complex_alu_op_reg[3] <= 3'd0;
@@ -232,7 +232,7 @@ always @(posedge clk) begin
 		mem_ins_reg[4] <= 1'd0;
 		mem_type_reg[4] <= 1'd0;
 		func_unit_reg[4] <= 3'd0;
-		muxa_reg[4] <= 1'd0;
+		muxa_reg[4] <= 2'd0;
 		muxb_reg[4] <= 2'd0;
 		alu_op_reg[4] <= 3'd0;
 		complex_alu_op_reg[4] <= 3'd0;
@@ -257,7 +257,7 @@ always @(posedge clk) begin
 		mem_ins_reg[5] <= 1'b0;
 		mem_type_reg[5] <= 1'b0;
 		func_unit_reg[5] <= 3'b000;
-		muxa_reg[5] <= 1'b1;
+		muxa_reg[5] <= 2'b11;
 		muxb_reg[5] <= 2'b00;
 		alu_op_reg[5] <= 3'b001;
 		complex_alu_op_reg[5] <= 3'b000;
@@ -282,7 +282,7 @@ always @(posedge clk) begin
 		mem_ins_reg[6] <= 1'b0;
 		mem_type_reg[6] <= 1'b0;
 		func_unit_reg[6] <= 3'b000;
-		muxa_reg[6] <= 1'b1;
+		muxa_reg[6] <= 2'b11;
 		muxb_reg[6] <= 2'b00;
 		alu_op_reg[6] <= 3'b010;
 		complex_alu_op_reg[6] <= 3'b000;
@@ -307,7 +307,7 @@ always @(posedge clk) begin
 		mem_ins_reg[7] <= 1'b0;
 		mem_type_reg[7] <= 1'b0;
 		func_unit_reg[7] <= 3'b000;
-		muxa_reg[7] <= 1'b1;
+		muxa_reg[7] <= 2'b11;
 		muxb_reg[7] <= 2'b11;
 		alu_op_reg[7] <= 3'b011;
 		complex_alu_op_reg[7] <= 3'b000;
@@ -332,7 +332,7 @@ always @(posedge clk) begin
 		mem_ins_reg[8] <= 1'b0;
 		mem_type_reg[8] <= 1'b0;
 		func_unit_reg[8] <= 3'b000;
-		muxa_reg[8] <= 1'b1;
+		muxa_reg[8] <= 2'b11;
 		muxb_reg[8] <= 2'b11;
 		alu_op_reg[8] <= 3'b100;
 		complex_alu_op_reg[8] <= 3'b000;
@@ -357,7 +357,7 @@ always @(posedge clk) begin
 		mem_ins_reg[9] <= 1'b0;
 		mem_type_reg[9] <= 1'b0;
 		func_unit_reg[9] <= 3'b000;
-		muxa_reg[9] <= 1'b1;
+		muxa_reg[9] <= 2'b11;
 		muxb_reg[9] <= 2'b11;
 		alu_op_reg[9] <= 3'b101;
 		complex_alu_op_reg[9] <= 3'b000;
@@ -382,7 +382,7 @@ always @(posedge clk) begin
 		mem_ins_reg[10] <= 1'b0;
 		mem_type_reg[10] <= 1'b0;
 		func_unit_reg[10] <= 3'b000;
-		muxa_reg[10] <= 1'b1;
+		muxa_reg[10] <= 2'b11;
 		muxb_reg[10] <= 2'b11;
 		alu_op_reg[10] <= 3'b110;
 		complex_alu_op_reg[10] <= 3'b000;
@@ -407,7 +407,7 @@ always @(posedge clk) begin
 		mem_ins_reg[11] <= 1'b0;
 		mem_type_reg[11] <= 1'b0;
 		func_unit_reg[11] <= 3'b000;
-		muxa_reg[11] <= 1'b1;
+		muxa_reg[11] <= 2'b11;
 		muxb_reg[11] <= 2'b11;
 		alu_op_reg[11] <= 3'b111;
 		complex_alu_op_reg[11] <= 3'b000;
@@ -432,7 +432,7 @@ always @(posedge clk) begin
 		mem_ins_reg[12] <= 1'b0;
 		mem_type_reg[12] <= 1'b0;
 		func_unit_reg[12] <= 3'b010;
-		muxa_reg[12] <= 1'b1;
+		muxa_reg[12] <= 2'b11;
 		muxb_reg[12] <= 2'b11;
 		alu_op_reg[12] <= 3'b000;
 		complex_alu_op_reg[12] <= 3'b001;
@@ -457,7 +457,7 @@ always @(posedge clk) begin
 		mem_ins_reg[13] <= 1'b0;
 		mem_type_reg[13] <= 1'b0;
 		func_unit_reg[13] <= 3'b010;
-		muxa_reg[13] <= 1'b1;
+		muxa_reg[13] <= 2'b11;
 		muxb_reg[13] <= 2'b11;
 		alu_op_reg[13] <= 3'b000;
 		complex_alu_op_reg[13] <= 3'b010;
@@ -482,7 +482,7 @@ always @(posedge clk) begin
 		mem_ins_reg[14] <= 1'b0;
 		mem_type_reg[14] <= 1'b0;
 		func_unit_reg[14] <= 3'b010;
-		muxa_reg[14] <= 1'b1;
+		muxa_reg[14] <= 2'b11;
 		muxb_reg[14] <= 2'b11;
 		alu_op_reg[14] <= 3'b000;
 		complex_alu_op_reg[14] <= 3'b011;
@@ -507,7 +507,7 @@ always @(posedge clk) begin
 		mem_ins_reg[15] <= 1'b0;
 		mem_type_reg[15] <= 1'b0;
 		func_unit_reg[15] <= 3'b010;
-		muxa_reg[15] <= 1'b1;
+		muxa_reg[15] <= 2'b11;
 		muxb_reg[15] <= 2'b11;
 		alu_op_reg[15] <= 3'b000;
 		complex_alu_op_reg[15] <= 3'b100;
@@ -532,7 +532,7 @@ always @(posedge clk) begin
 		mem_ins_reg[16] <= 1'b0;
 		mem_type_reg[16] <= 1'b0;
 		func_unit_reg[16] <= 3'b010;
-		muxa_reg[16] <= 1'b1;
+		muxa_reg[16] <= 2'b11;
 		muxb_reg[16] <= 2'b11;
 		alu_op_reg[16] <= 3'b000;
 		complex_alu_op_reg[16] <= 3'b101;
@@ -557,7 +557,7 @@ always @(posedge clk) begin
 		mem_ins_reg[17] <= 1'b0;
 		mem_type_reg[17] <= 1'b0;
 		func_unit_reg[17] <= 3'b000;
-		muxa_reg[17] <= 1'b1;
+		muxa_reg[17] <= 2'b11;
 		muxb_reg[17] <= 2'b01;
 		alu_op_reg[17] <= 3'b011;
 		complex_alu_op_reg[17] <= 3'b000;
@@ -582,7 +582,7 @@ always @(posedge clk) begin
 		mem_ins_reg[18] <= 1'b0;
 		mem_type_reg[18] <= 1'b0;
 		func_unit_reg[18] <= 3'b000;
-		muxa_reg[18] <= 1'b1;
+		muxa_reg[18] <= 2'b11;
 		muxb_reg[18] <= 2'b01;
 		alu_op_reg[18] <= 3'b100;
 		complex_alu_op_reg[18] <= 3'b000;
@@ -607,7 +607,7 @@ always @(posedge clk) begin
 		mem_ins_reg[19] <= 1'b0;
 		mem_type_reg[19] <= 1'b0;
 		func_unit_reg[19] <= 3'b000;
-		muxa_reg[19] <= 1'b1;
+		muxa_reg[19] <= 2'b11;
 		muxb_reg[19] <= 2'b01;
 		alu_op_reg[19] <= 3'b101;
 		complex_alu_op_reg[19] <= 3'b000;
@@ -632,7 +632,7 @@ always @(posedge clk) begin
 		mem_ins_reg[20] <= 1'b0;
 		mem_type_reg[20] <= 1'b0;
 		func_unit_reg[20] <= 3'b000;
-		muxa_reg[20] <= 1'b1;
+		muxa_reg[20] <= 2'b11;
 		muxb_reg[20] <= 2'b01;
 		alu_op_reg[20] <= 3'b110;
 		complex_alu_op_reg[20] <= 3'b000;
@@ -657,7 +657,7 @@ always @(posedge clk) begin
 		mem_ins_reg[21] <= 1'b0;
 		mem_type_reg[21] <= 1'b0;
 		func_unit_reg[21] <= 3'b000;
-		muxa_reg[21] <= 1'b1;
+		muxa_reg[21] <= 2'b11;
 		muxb_reg[21] <= 2'b01;
 		alu_op_reg[21] <= 3'b111;
 		complex_alu_op_reg[21] <= 3'b000;
@@ -682,7 +682,7 @@ always @(posedge clk) begin
 		mem_ins_reg[22] <= 1'b0;
 		mem_type_reg[22] <= 1'b0;
 		func_unit_reg[22] <= 3'b010;
-		muxa_reg[22] <= 1'b1;
+		muxa_reg[22] <= 2'b11;
 		muxb_reg[22] <= 2'b01;
 		alu_op_reg[22] <= 3'b000;
 		complex_alu_op_reg[22] <= 3'b001;
@@ -707,7 +707,7 @@ always @(posedge clk) begin
 		mem_ins_reg[23] <= 1'b0;
 		mem_type_reg[23] <= 1'b0;
 		func_unit_reg[23] <= 3'b010;
-		muxa_reg[23] <= 1'b1;
+		muxa_reg[23] <= 2'b11;
 		muxb_reg[23] <= 2'b01;
 		alu_op_reg[23] <= 3'b000;
 		complex_alu_op_reg[23] <= 3'b010;
@@ -732,7 +732,7 @@ always @(posedge clk) begin
 		mem_ins_reg[24] <= 1'b0;
 		mem_type_reg[24] <= 1'b0;
 		func_unit_reg[24] <= 3'b010;
-		muxa_reg[24] <= 1'b1;
+		muxa_reg[24] <= 2'b11;
 		muxb_reg[24] <= 2'b01;
 		alu_op_reg[24] <= 3'b000;
 		complex_alu_op_reg[24] <= 3'b011;
@@ -757,7 +757,7 @@ always @(posedge clk) begin
 		mem_ins_reg[25] <= 1'b0;
 		mem_type_reg[25] <= 1'b0;
 		func_unit_reg[25] <= 3'b010;
-		muxa_reg[25] <= 1'b1;
+		muxa_reg[25] <= 2'b11;
 		muxb_reg[25] <= 2'b01;
 		alu_op_reg[25] <= 3'b000;
 		complex_alu_op_reg[25] <= 3'b100;
@@ -782,7 +782,7 @@ always @(posedge clk) begin
 		mem_ins_reg[26] <= 1'b0;
 		mem_type_reg[26] <= 1'b0;
 		func_unit_reg[26] <= 3'b010;
-		muxa_reg[26] <= 1'b1;
+		muxa_reg[26] <= 2'b11;
 		muxb_reg[26] <= 2'b01;
 		alu_op_reg[26] <= 3'b000;
 		complex_alu_op_reg[26] <= 3'b101;
@@ -807,7 +807,7 @@ always @(posedge clk) begin
 		mem_ins_reg[27] <= 1'b0;
 		mem_type_reg[27] <= 1'b0;
 		func_unit_reg[27] <= 3'b000;
-		muxa_reg[27] <= 1'b0;
+		muxa_reg[27] <= 2'b10;
 		muxb_reg[27] <= 2'b00;
 		alu_op_reg[27] <= 3'b011;
 		complex_alu_op_reg[27] <= 3'b000;
@@ -832,7 +832,7 @@ always @(posedge clk) begin
 		mem_ins_reg[28] <= 1'b0;
 		mem_type_reg[28] <= 1'b0;
 		func_unit_reg[28] <= 3'b000;
-		muxa_reg[28] <= 1'b1;
+		muxa_reg[28] <= 2'b11;
 		muxb_reg[28] <= 2'b00;
 		alu_op_reg[28] <= 3'b000;
 		complex_alu_op_reg[28] <= 3'b000;
@@ -857,7 +857,7 @@ always @(posedge clk) begin
 		mem_ins_reg[29] <= 1'b0;
 		mem_type_reg[29] <= 1'b0;
 		func_unit_reg[29] <= 3'b000;
-		muxa_reg[29] <= 1'b0;
+		muxa_reg[29] <= 2'b10;
 		muxb_reg[29] <= 2'b00;
 		alu_op_reg[29] <= 3'b011;
 		complex_alu_op_reg[29] <= 3'b000;
@@ -882,7 +882,7 @@ always @(posedge clk) begin
 		mem_ins_reg[30] <= 1'b0;
 		mem_type_reg[30] <= 1'b0;
 		func_unit_reg[30] <= 3'b000;
-		muxa_reg[30] <= 1'b1;
+		muxa_reg[30] <= 2'b11;
 		muxb_reg[30] <= 2'b00;
 		alu_op_reg[30] <= 3'b000;
 		complex_alu_op_reg[30] <= 3'b000;
@@ -907,7 +907,7 @@ always @(posedge clk) begin
 		mem_ins_reg[31] <= 1'd0;
 		mem_type_reg[31] <= 1'd0;
 		func_unit_reg[31] <= 3'd0;
-		muxa_reg[31] <= 1'd0;
+		muxa_reg[31] <= 2'd0;
 		muxb_reg[31] <= 2'd0;
 		alu_op_reg[31] <= 3'd0;
 		complex_alu_op_reg[31] <= 3'd0;
@@ -932,7 +932,7 @@ always @(posedge clk) begin
 		mem_ins_reg[32] <= 1'd0;
 		mem_type_reg[32] <= 1'd0;
 		func_unit_reg[32] <= 3'd0;
-		muxa_reg[32] <= 1'd0;
+		muxa_reg[32] <= 2'd0;
 		muxb_reg[32] <= 2'd0;
 		alu_op_reg[32] <= 3'd0;
 		complex_alu_op_reg[32] <= 3'd0;
@@ -957,7 +957,7 @@ always @(posedge clk) begin
 		mem_ins_reg[33] <= 1'd0;
 		mem_type_reg[33] <= 1'd0;
 		func_unit_reg[33] <= 3'd0;
-		muxa_reg[33] <= 1'd0;
+		muxa_reg[33] <= 2'd0;
 		muxb_reg[33] <= 2'd0;
 		alu_op_reg[33] <= 3'd0;
 		complex_alu_op_reg[33] <= 3'd0;
@@ -982,7 +982,7 @@ always @(posedge clk) begin
 		mem_ins_reg[34] <= 1'd0;
 		mem_type_reg[34] <= 1'd0;
 		func_unit_reg[34] <= 3'd0;
-		muxa_reg[34] <= 1'd0;
+		muxa_reg[34] <= 2'd0;
 		muxb_reg[34] <= 2'd0;
 		alu_op_reg[34] <= 3'd0;
 		complex_alu_op_reg[34] <= 3'd0;
@@ -1007,8 +1007,8 @@ always @(posedge clk) begin
 		mem_ins_reg[35] <= 1'b1;
 		mem_type_reg[35] <= 1'b0;
 		func_unit_reg[35] <= 3'b100;
-		muxa_reg[35] <= 1'b1;
-		muxb_reg[35] <= 2'b10;
+		muxa_reg[35] <= 2'b11;
+		muxb_reg[35] <= 2'b01;
 		alu_op_reg[35] <= 3'b000;
 		complex_alu_op_reg[35] <= 3'b000;
 		pred_op_reg[35] <= 3'b000;
@@ -1032,8 +1032,8 @@ always @(posedge clk) begin
 		mem_ins_reg[36] <= 1'b1;
 		mem_type_reg[36] <= 1'b1;
 		func_unit_reg[36] <= 3'b100;
-		muxa_reg[36] <= 1'b1;
-		muxb_reg[36] <= 2'b10;
+		muxa_reg[36] <= 2'b11;
+		muxb_reg[36] <= 2'b01;
 		alu_op_reg[36] <= 3'b000;
 		complex_alu_op_reg[36] <= 3'b000;
 		pred_op_reg[36] <= 3'b000;
@@ -1043,8 +1043,8 @@ always @(posedge clk) begin
 		// LDI - 0x25
 		invalid_op_reg[37] <= 1'b0;
 		skip_to_retire_reg[37] <= 1'b0;
-		reg_dest_valid_reg[37] <= 1'b0;
-		reg_src1_valid_reg[37] <= 1'b1;
+		reg_dest_valid_reg[37] <= 1'b1;
+		reg_src1_valid_reg[37] <= 1'b0;
 		reg_src2_valid_reg[37] <= 1'b0;
 		pred_dest_valid_reg[37] <= 1'b0;
 		pred_src1_valid_reg[37] <= 1'b0;
@@ -1054,12 +1054,12 @@ always @(posedge clk) begin
 		ins_type_reg[37] <= 2'b10;
 		br_ins_reg[37] <= 1'b0;
 		br_type_reg[37] <= 2'b00;
-		mem_ins_reg[37] <= 1'b1;
+		mem_ins_reg[37] <= 1'b0;
 		mem_type_reg[37] <= 1'b0;
-		func_unit_reg[37] <= 3'b100;
-		muxa_reg[37] <= 1'b0;
+		func_unit_reg[37] <= 3'b000;
+		muxa_reg[37] <= 2'b00;
 		muxb_reg[37] <= 2'b10;
-		alu_op_reg[37] <= 3'b000;
+		alu_op_reg[37] <= 3'b011;
 		complex_alu_op_reg[37] <= 3'b000;
 		pred_op_reg[37] <= 3'b000;
 		float_op_reg[37] <= 3'b000;
@@ -1082,7 +1082,7 @@ always @(posedge clk) begin
 		mem_ins_reg[38] <= 1'd0;
 		mem_type_reg[38] <= 1'd0;
 		func_unit_reg[38] <= 3'd0;
-		muxa_reg[38] <= 1'd0;
+		muxa_reg[38] <= 2'd0;
 		muxb_reg[38] <= 2'd0;
 		alu_op_reg[38] <= 3'd0;
 		complex_alu_op_reg[38] <= 3'd0;
@@ -1107,7 +1107,7 @@ always @(posedge clk) begin
 		mem_ins_reg[39] <= 1'b0;
 		mem_type_reg[39] <= 1'b0;
 		func_unit_reg[39] <= 3'b011;
-		muxa_reg[39] <= 1'b0;
+		muxa_reg[39] <= 2'b00;
 		muxb_reg[39] <= 2'b00;
 		alu_op_reg[39] <= 3'b000;
 		complex_alu_op_reg[39] <= 3'b000;
@@ -1132,7 +1132,7 @@ always @(posedge clk) begin
 		mem_ins_reg[40] <= 1'b0;
 		mem_type_reg[40] <= 1'b0;
 		func_unit_reg[40] <= 3'b011;
-		muxa_reg[40] <= 1'b0;
+		muxa_reg[40] <= 2'b00;
 		muxb_reg[40] <= 2'b00;
 		alu_op_reg[40] <= 3'b000;
 		complex_alu_op_reg[40] <= 3'b000;
@@ -1157,7 +1157,7 @@ always @(posedge clk) begin
 		mem_ins_reg[41] <= 1'b0;
 		mem_type_reg[41] <= 1'b0;
 		func_unit_reg[41] <= 3'b011;
-		muxa_reg[41] <= 1'b0;
+		muxa_reg[41] <= 2'b00;
 		muxb_reg[41] <= 2'b00;
 		alu_op_reg[41] <= 3'b000;
 		complex_alu_op_reg[41] <= 3'b000;
@@ -1182,7 +1182,7 @@ always @(posedge clk) begin
 		mem_ins_reg[42] <= 1'b0;
 		mem_type_reg[42] <= 1'b0;
 		func_unit_reg[42] <= 3'b011;
-		muxa_reg[42] <= 1'b0;
+		muxa_reg[42] <= 2'b00;
 		muxb_reg[42] <= 2'b00;
 		alu_op_reg[42] <= 3'b000;
 		complex_alu_op_reg[42] <= 3'b000;
@@ -1207,7 +1207,7 @@ always @(posedge clk) begin
 		mem_ins_reg[43] <= 1'b0;
 		mem_type_reg[43] <= 1'b0;
 		func_unit_reg[43] <= 3'b011;
-		muxa_reg[43] <= 1'b1;
+		muxa_reg[43] <= 2'b11;
 		muxb_reg[43] <= 2'b00;
 		alu_op_reg[43] <= 3'b000;
 		complex_alu_op_reg[43] <= 3'b000;
@@ -1232,7 +1232,7 @@ always @(posedge clk) begin
 		mem_ins_reg[44] <= 1'b0;
 		mem_type_reg[44] <= 1'b0;
 		func_unit_reg[44] <= 3'b011;
-		muxa_reg[44] <= 1'b1;
+		muxa_reg[44] <= 2'b11;
 		muxb_reg[44] <= 2'b00;
 		alu_op_reg[44] <= 3'b000;
 		complex_alu_op_reg[44] <= 3'b000;
@@ -1257,7 +1257,7 @@ always @(posedge clk) begin
 		mem_ins_reg[45] <= 1'd0;
 		mem_type_reg[45] <= 1'd0;
 		func_unit_reg[45] <= 3'd0;
-		muxa_reg[45] <= 1'd0;
+		muxa_reg[45] <= 2'd0;
 		muxb_reg[45] <= 2'd0;
 		alu_op_reg[45] <= 3'd0;
 		complex_alu_op_reg[45] <= 3'd0;
@@ -1282,7 +1282,7 @@ always @(posedge clk) begin
 		mem_ins_reg[46] <= 1'd0;
 		mem_type_reg[46] <= 1'd0;
 		func_unit_reg[46] <= 3'd0;
-		muxa_reg[46] <= 1'd0;
+		muxa_reg[46] <= 2'd0;
 		muxb_reg[46] <= 2'd0;
 		alu_op_reg[46] <= 3'd0;
 		complex_alu_op_reg[46] <= 3'd0;
@@ -1307,7 +1307,7 @@ always @(posedge clk) begin
 		mem_ins_reg[47] <= 1'd0;
 		mem_type_reg[47] <= 1'd0;
 		func_unit_reg[47] <= 3'd0;
-		muxa_reg[47] <= 1'd0;
+		muxa_reg[47] <= 2'd0;
 		muxb_reg[47] <= 2'd0;
 		alu_op_reg[47] <= 3'd0;
 		complex_alu_op_reg[47] <= 3'd0;
@@ -1332,7 +1332,7 @@ always @(posedge clk) begin
 		mem_ins_reg[48] <= 1'd0;
 		mem_type_reg[48] <= 1'd0;
 		func_unit_reg[48] <= 3'd0;
-		muxa_reg[48] <= 1'd0;
+		muxa_reg[48] <= 2'd0;
 		muxb_reg[48] <= 2'd0;
 		alu_op_reg[48] <= 3'd0;
 		complex_alu_op_reg[48] <= 3'd0;
@@ -1357,7 +1357,7 @@ always @(posedge clk) begin
 		mem_ins_reg[49] <= 1'd0;
 		mem_type_reg[49] <= 1'd0;
 		func_unit_reg[49] <= 3'd0;
-		muxa_reg[49] <= 1'd0;
+		muxa_reg[49] <= 2'd0;
 		muxb_reg[49] <= 2'd0;
 		alu_op_reg[49] <= 3'd0;
 		complex_alu_op_reg[49] <= 3'd0;
@@ -1382,7 +1382,7 @@ always @(posedge clk) begin
 		mem_ins_reg[50] <= 1'd0;
 		mem_type_reg[50] <= 1'd0;
 		func_unit_reg[50] <= 3'd0;
-		muxa_reg[50] <= 1'd0;
+		muxa_reg[50] <= 2'd0;
 		muxb_reg[50] <= 2'd0;
 		alu_op_reg[50] <= 3'd0;
 		complex_alu_op_reg[50] <= 3'd0;
@@ -1407,7 +1407,7 @@ always @(posedge clk) begin
 		mem_ins_reg[51] <= 1'b0;
 		mem_type_reg[51] <= 1'b0;
 		func_unit_reg[51] <= 3'b001;
-		muxa_reg[51] <= 1'b1;
+		muxa_reg[51] <= 2'b11;
 		muxb_reg[51] <= 2'b00;
 		alu_op_reg[51] <= 3'b000;
 		complex_alu_op_reg[51] <= 3'b000;
@@ -1432,7 +1432,7 @@ always @(posedge clk) begin
 		mem_ins_reg[52] <= 1'b0;
 		mem_type_reg[52] <= 1'b0;
 		func_unit_reg[52] <= 3'b001;
-		muxa_reg[52] <= 1'b1;
+		muxa_reg[52] <= 2'b11;
 		muxb_reg[52] <= 2'b00;
 		alu_op_reg[52] <= 3'b000;
 		complex_alu_op_reg[52] <= 3'b000;
@@ -1457,7 +1457,7 @@ always @(posedge clk) begin
 		mem_ins_reg[53] <= 1'b0;
 		mem_type_reg[53] <= 1'b0;
 		func_unit_reg[53] <= 3'b001;
-		muxa_reg[53] <= 1'b1;
+		muxa_reg[53] <= 2'b11;
 		muxb_reg[53] <= 2'b11;
 		alu_op_reg[53] <= 3'b000;
 		complex_alu_op_reg[53] <= 3'b000;
@@ -1482,7 +1482,7 @@ always @(posedge clk) begin
 		mem_ins_reg[54] <= 1'b0;
 		mem_type_reg[54] <= 1'b0;
 		func_unit_reg[54] <= 3'b001;
-		muxa_reg[54] <= 1'b1;
+		muxa_reg[54] <= 2'b11;
 		muxb_reg[54] <= 2'b11;
 		alu_op_reg[54] <= 3'b000;
 		complex_alu_op_reg[54] <= 3'b000;
@@ -1507,7 +1507,7 @@ always @(posedge clk) begin
 		mem_ins_reg[55] <= 1'b0;
 		mem_type_reg[55] <= 1'b0;
 		func_unit_reg[55] <= 3'b001;
-		muxa_reg[55] <= 1'b1;
+		muxa_reg[55] <= 2'b11;
 		muxb_reg[55] <= 2'b11;
 		alu_op_reg[55] <= 3'b000;
 		complex_alu_op_reg[55] <= 3'b000;
@@ -1532,7 +1532,7 @@ always @(posedge clk) begin
 		mem_ins_reg[56] <= 1'b0;
 		mem_type_reg[56] <= 1'b0;
 		func_unit_reg[56] <= 3'b001;
-		muxa_reg[56] <= 1'b1;
+		muxa_reg[56] <= 2'b11;
 		muxb_reg[56] <= 2'b11;
 		alu_op_reg[56] <= 3'b000;
 		complex_alu_op_reg[56] <= 3'b000;
@@ -1557,7 +1557,7 @@ always @(posedge clk) begin
 		mem_ins_reg[57] <= 1'b0;
 		mem_type_reg[57] <= 1'b0;
 		func_unit_reg[57] <= 3'b001;
-		muxa_reg[57] <= 1'b1;
+		muxa_reg[57] <= 2'b11;
 		muxb_reg[57] <= 2'b00;
 		alu_op_reg[57] <= 3'b000;
 		complex_alu_op_reg[57] <= 3'b000;
@@ -1582,7 +1582,7 @@ always @(posedge clk) begin
 		mem_ins_reg[58] <= 1'd0;
 		mem_type_reg[58] <= 1'd0;
 		func_unit_reg[58] <= 3'd0;
-		muxa_reg[58] <= 1'd0;
+		muxa_reg[58] <= 2'd0;
 		muxb_reg[58] <= 2'd0;
 		alu_op_reg[58] <= 3'd0;
 		complex_alu_op_reg[58] <= 3'd0;
@@ -1607,7 +1607,7 @@ always @(posedge clk) begin
 		mem_ins_reg[59] <= 1'd0;
 		mem_type_reg[59] <= 1'd0;
 		func_unit_reg[59] <= 3'd0;
-		muxa_reg[59] <= 1'd0;
+		muxa_reg[59] <= 2'd0;
 		muxb_reg[59] <= 2'd0;
 		alu_op_reg[59] <= 3'd0;
 		complex_alu_op_reg[59] <= 3'd0;
@@ -1632,7 +1632,7 @@ always @(posedge clk) begin
 		mem_ins_reg[60] <= 1'd0;
 		mem_type_reg[60] <= 1'd0;
 		func_unit_reg[60] <= 3'd0;
-		muxa_reg[60] <= 1'd0;
+		muxa_reg[60] <= 2'd0;
 		muxb_reg[60] <= 2'd0;
 		alu_op_reg[60] <= 3'd0;
 		complex_alu_op_reg[60] <= 3'd0;
@@ -1657,7 +1657,7 @@ always @(posedge clk) begin
 		mem_ins_reg[61] <= 1'd0;
 		mem_type_reg[61] <= 1'd0;
 		func_unit_reg[61] <= 3'd0;
-		muxa_reg[61] <= 1'd0;
+		muxa_reg[61] <= 2'd0;
 		muxb_reg[61] <= 2'd0;
 		alu_op_reg[61] <= 3'd0;
 		complex_alu_op_reg[61] <= 3'd0;
@@ -1682,7 +1682,7 @@ always @(posedge clk) begin
 		mem_ins_reg[62] <= 1'd0;
 		mem_type_reg[62] <= 1'd0;
 		func_unit_reg[62] <= 3'd0;
-		muxa_reg[62] <= 1'd0;
+		muxa_reg[62] <= 2'd0;
 		muxb_reg[62] <= 2'd0;
 		alu_op_reg[62] <= 3'd0;
 		complex_alu_op_reg[62] <= 3'd0;
@@ -1707,7 +1707,7 @@ always @(posedge clk) begin
 		mem_ins_reg[63] <= 1'd0;
 		mem_type_reg[63] <= 1'd0;
 		func_unit_reg[63] <= 3'd0;
-		muxa_reg[63] <= 1'd0;
+		muxa_reg[63] <= 2'd0;
 		muxb_reg[63] <= 2'd0;
 		alu_op_reg[63] <= 3'd0;
 		complex_alu_op_reg[63] <= 3'd0;

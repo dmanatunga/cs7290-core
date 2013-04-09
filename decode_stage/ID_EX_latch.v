@@ -74,7 +74,7 @@ input	[2:0]			in_complex_alu_op;
 input	[2:0]			in_pred_op;
 input	[2:0]			in_float_op;
 input	[`ROB_ID_SIZE-1:0]	in_ins_id;
-input				in_muxa;
+input	[1:0]			in_muxa;
 input	[1:0]			in_muxb;
 input   [`DATA_WIDTH-1:0]	in_next_pc; // Also to ex latch
 
@@ -100,7 +100,7 @@ output reg	[2:0]			out_complex_alu_op;
 output reg	[2:0]			out_pred_op;
 output reg	[2:0]			out_float_op;
 output reg	[`ROB_ID_SIZE-1:0]	out_ins_id;
-output reg				out_muxa;
+output reg	[1:0]			out_muxa;
 output reg	[1:0]			out_muxb;
 output reg      [`DATA_WIDTH-1:0]	out_next_pc; // Also to ex latch
 

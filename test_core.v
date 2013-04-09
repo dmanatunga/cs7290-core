@@ -47,19 +47,36 @@ initial begin
 	for (i = 1; i < MEM_SIZE; i = i + 1) begin
 		MEMORY[i] = 0;
 	end
-	MEMORY[0] =  {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd3};
-	MEMORY[1] =  {1'b0, 2'b00, 6'h0x14, 4'd2, 4'd0, 15'd1};
-	MEMORY[2] =  {1'b0, 2'b00, 6'h0x15, 4'd3, 4'd0, 15'd1};
-	MEMORY[3] =  {1'b0, 2'b00, 6'h0x16, 4'd4, 4'd2, 15'd4};
-	MEMORY[4] =  {1'b0, 2'b00, 6'h0x1d, 23'd40};
-	MEMORY[15] = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd10};
-	MEMORY[16] = {1'b0, 2'b00, 6'h0x14, 4'd2, 4'd0, 15'd111};
+      //$readmemh("/home/nnigania/Dropbox/Personal/Acads/adv.micro/Project/cs7290-core/Insts.hex", MEMORY);
+//	MEMORY[0]  = {1'b0, 2'b00, 6'h0x23, 4'd1, 4'd0, 15'd10};		// R1 <= LD(dest 10)
+//	MEMORY[1]  = {1'b0, 2'b00, 6'h0x23, 4'd3, 4'd2, 15'd20};		// R3 <= LD(dest 20)
+//	MEMORY[2]  = {1'b0, 2'b00, 6'h0x23, 4'd5, 4'd4, 15'd91};		// R5 <= LD(dest 91)
+//	MEMORY[3]  = {1'b0, 2'b00, 6'h0x24, 4'd7, 4'd6, 15'd999};		// R5 <= LD(dest 91)
+//	MEMORY[4]  = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd5, 15'd3};		// R0 = R1 + 3     => R0 = 3
+	MEMORY[0]  = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd3};		// R0 = R1 + 3     => R0 = 3
+	MEMORY[1]  = {1'b0, 2'b00, 6'h0x14, 4'd2, 4'd0, 15'd1}; 	// R2 = R0 + 1     => R2 = 4
+	MEMORY[2]  = {1'b0, 2'b00, 6'h0x15, 4'd3, 4'd0, 15'd1}; 	// R3 = R0 - 1     => R3 = 2
+	MEMORY[3]  = {1'b0, 2'b00, 6'h0x16, 4'd4, 4'd2, 15'd4}; 	// R4 = R2 * 4     => R4 = 16
+	MEMORY[4]  = {1'b0, 2'b00, 6'h0x1d, 23'd40};			// Branch to PC + 4 + 40 = 60 (register no. 15)
+	MEMORY[15] = {1'b0, 2'b00, 6'h0x14, 4'd0, 4'd1, 15'd10};	// R0 = R1 + 10    => R0 = 10 
+	MEMORY[16] = {1'b0, 2'b00, 6'h0x14, 4'd1, 4'd0, 15'd111};	// R1 = R0 + 111   => R1 = 121
+	MEMORY[17] = {1'b0, 2'b00, 6'h0x27, 2'd2, 2'd0, 2'd1, 17'd0}; 	// PR2 = PR0 & PR1 => PR0 = 0
+	MEMORY[18] = {1'b0, 2'b00, 6'h0x2a, 2'd3, 2'd0, 2'd1, 17'd0}; 	// PR3 = NOT( PR0) => PR3 = 1
+	MEMORY[19] = {1'b1, 2'b10, 6'h0x14, 4'd2, 4'd1, 15'd111};     	// (PR2) R2 = R1 + 111 => R2 = old value
+	MEMORY[20] = {1'b1, 2'b11, 6'h0x14, 4'd5, 4'd1, 15'd111};     	// (PR2) R2 = R1 + 111 => R2 = old value
+	//MEMORY[17] = {1'b0, 2'b00, 6'h0x07, 4'd2, 4'd1, 4'd4,11'd0 };   // 
+	//MEMORY[17] = {1'b0, 2'b00, 6'h0x0d, 4'd2, 4'd1, 4'd4,11'd0 }; //R2 = R1 / R4 
+	//MEMORY[18] = {1'b0, 2'b00, 6'h0x14, 4'd5, 4'd4, 15'd3};	//R5 = R4 + 3
+	//MEMORY[19] = {1'b0, 2'b00, 6'h0x15, 4'd6, 4'd4, 15'd1};	//R6 = R4 - 1
+	//MEMORY[20] = {1'b0, 2'b00, 6'h0x16, 4'd4, 4'd5, 15'd4};	//R4 = R5 * 4
+	//MEMORY[21] = {1'b0, 2'b00, 6'h0x15, 4'd7, 4'd6, 15'd1};	//R7 = R6 - 1
+	//MEMORY[17] = {1'b0, 2'b00, 6'h0x0f, 4'd5, 4'd0, 4'd3,11'd0 };   // R5 = R0 << R3 => R5 = 40	
 
 	clk = 1'b1;
 	reset = 1'b1;
 	mem_stall = 1'b0;
 #210	reset = 1'b0;
-#1800
+#4500
 	$finish;
 end
 

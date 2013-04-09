@@ -127,7 +127,7 @@ output							id_stalls_if;
 output 	mem_ins;
 output 	mem_type;
 output	[2:0]		func_unit;
-output 	muxa;
+output 	[1:0]muxa;
 output	[1:0]		muxb;
 output	[2:0]		alu_op;
 output	[2:0]		complex_alu_op;

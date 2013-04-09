@@ -94,7 +94,7 @@ wire	[2:0]	id_complex_alu_op;
 wire	[2:0]	id_pred_op;
 wire	[2:0]	id_float_op;
 wire	[`ROB_ID_SIZE-1:0]	id_ins_id;
-wire	id_muxa;
+wire	[1:0]id_muxa;
 wire	[1:0]	id_muxb;
 
 wire	ex_ins_nop;
@@ -116,7 +116,7 @@ wire	[2:0]	ex_complex_alu_op;
 wire	[2:0]	ex_pred_op;
 wire	[2:0]	ex_float_op;
 wire	[`ROB_ID_SIZE-1:0]	ex_ins_id;
-wire	ex_muxa;
+wire	[1:0]ex_muxa;
 wire	[1:0]	ex_muxb;
 wire    [`DATA_WIDTH-1:0]	ex_next_pc; // Also to ex latch
 

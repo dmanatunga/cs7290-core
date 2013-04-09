@@ -125,13 +125,17 @@ always @(posedge clk) begin
 end
 
 initial begin
-#1000 set_ins_finished 	= 1;
+#980 set_ins_finished 	= 1;
 ins_queue_id = 0;
 mem_data_out 		= 32'd99;
 #100 set_ins_finished 	= 0; 
 #100 set_ins_finished 	= 1; 
 mem_data_out 		= 32'd75;
 ins_queue_id = 1;
+#100 set_ins_finished 	= 0; 
+#400 set_ins_finished 	= 1; 
+mem_data_out 		= 32'd420;
+ins_queue_id = 2;
 #100 set_ins_finished 	= 0; 
 end
 /*memory_system mem_module(
